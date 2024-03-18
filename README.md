@@ -1,2 +1,2 @@
-# pypanter
-A Python Package for NLP obfuscation using Differential Privacy
+# Pypanter
+## A Python PAckage for Natural langage processing obfuscaTion using DiffERential Privacy
