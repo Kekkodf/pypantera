@@ -1,7 +1,9 @@
 import numpy as np
 import numpy.random as npr
 import multiprocessing as mp
-from utils.vocab import Vocab
+from .utils.vocab import Vocab
+import os
+from typing import List
 
 '''
     BibTeX of CMP Mechanism, base mechanism class of the pypanter package:
@@ -52,7 +54,6 @@ class Mechanism():
         >>> eps: float = 0.1 #anyvalue of epsilon must be greater than 0
         >>> mech1 = Mechanism({'embPath': embPath, 'epsilon': eps})
         '''
-        
         self.vocab: Vocab = Vocab(kwargs['embPath'])
         self.embMatrix: np.array = np.array(
             list(self.vocab.embeddings.values())
@@ -70,23 +71,43 @@ class Mechanism():
         assert kwargs['epsilon'] > 0, 'The epsilon parameter must be greater than 0'
         self.epsilon: float = kwargs['epsilon']
 
-    def multiCoreRunner(self, numberOfCores: int):
+    def obfuscateText(self, data: str, numberOfCores: int) -> List[str]:
         '''
-        method multiCoreRunner: this method is used to run the obfuscation process in parallel
+        method obfuscateText: this method is used to obfuscate the text of the provided text using the CMP mechanism
+
+        : param data: str the text to obfuscate
+        : param numberOfCores: int the number of cores to use for the obfuscation
+
+        : return: str the obfuscated text
         '''
-        return
-    
-    def runner(self):
-        '''
-        method runner: this method is used to run the obfuscation process in a single core
-        '''
-        return
-    
-    def obfuscateText(self):
-        '''
-        method obfuscateText: this method is used to obfuscate the text of the query
-        '''
-        return
+        words = data.split() #split query into words
+        results = []
+        with mp.Pool(numberOfCores) as p:
+            tasks = [self.noisyEmb(words) for i in range(numberOfCores)]
+            results.append(p.map(self.processQuery, tasks))
+        return results
+
+    def noisyEmb(self, words: List[str]) -> np.array:
+        embs = []
+        for word in words:
+            if word not in self.vocab.embeddings:
+                embs.append(
+                    np.zeros(self.embMatrix.shape[1]) + npr.normal(0, 1, self.embMatrix.shape[1]) #handle OoV words
+                    + self.pullNoise()
+                    )
+            else:
+                embs.append(self.vocab.embeddings[word] + self.pullNoise())
+        return np.array(embs)
+
+    def processQuery(self, 
+                     embs: np.array) -> str:
+        length = len(embs)
+        distance = self.euclideanDistance(embs, self.embMatrix)
+        closest = np.argpartition(distance, 1, axis=1)[:, :1]
+        finalQuery = []
+        for i in range(length):
+            finalQuery.append(list(self.vocab.embeddings.keys())[closest[i][0]])
+        return ' '.join(finalQuery)
 
     def pullNoise(self) -> np.array:
         '''
@@ -110,58 +131,25 @@ class Mechanism():
         Z = Y * X
         return Z
     
-    #def obfuscate_text(self, text, e):
-    #    #text is a list of words
-    #    embs = []
-    #    for word in text:
-    #        if word not in self.vocab.keys():
-    #            embs.append(np.zeros(self.emb_matrix.shape[1]) + npr.normal(0, 1, self.emb_matrix.shape[1]))
-    #        else:
-    #            embs.append(self.vocab[word])
-    #    embs = np.array(embs)
-    #    #add noise to emeddings to each row
-    #    noise = np.array([self.noise_sampling(e) for i in range(len(embs))])
-    #    #logger.info(f"Adding noise to embeddings")
-    #    noisy_emb = embs + noise
-    #    #compute the distance between the noisy embeddings and the matrix of embeddings
-    #    def euclidean_distance_matrix(x, y):
-    #        x_expanded = x[:, np.newaxis, :]
-    #        y_expanded = y[np.newaxis, :, :]
-    #        return np.sqrt(np.sum((x_expanded - y_expanded) ** 2, axis=2))
-    #    distance = euclidean_distance_matrix(noisy_emb, self.emb_matrix)
-    #    #use argapartition to find the first closest words
-    #    closest = np.argpartition(distance, 1, axis=1)[:, :1]
-    #    final_qry = []
-    #    try:
-    #        for i in range(len(text)):
-    #            final_qry.append(list(self.vocab.keys())[closest[i][0]])
-    #    except:
-    #        final_qry.append(text)
-    #    return final_qry
-    
-    #def worker(self, query, e, number_of_desired_queries):
-    #    query['obfuscated text'] = query['text'].apply(lambda x: x.split())
-    #    #multiply the number of queries
-    #    query = query.loc[query.index.repeat(number_of_desired_queries)].reset_index(drop=True)
-    #    query['obfuscated text'] = query['obfuscated text'].apply(lambda x: self.obfuscate_text(x, e))
-    #    query['obfuscated text'] = query['obfuscated text'].apply(lambda x: " ".join(x))
-    #    #add a column with the value of epsilon
-    #    query['epsilon'] = e
-    #    return query
-    
-    #def obfuscate(self, query, logger, dict_params):
-    #    logger.info(f"Starting obfuscation process")
-    #    with mp.Pool(30) as p:
-    #        tasks = [(query, e, dict_params['number_of_desired_queries']) for e in self.epsilon]
-    #        results = p.starmap(self.worker, tasks)
-    #    logger.info(f"Obfuscation process finished")
-    #    return results
-        
-def main() -> None:
-    
-    mech1 = Mechanism({'embPath': embPath, 'epsilon': 0.1})
-    
-    
+    @staticmethod
+    def euclideanDistance(x: np.array, 
+                          y: np.array) -> np.array:
+        '''
+        method euclideanDistance: this method is used to compute the euclidean distance between two matrices
 
-if __name__ == '__main__':
-    main()
+        Remark: this method is an obtimization of the euclidean distance computation between two matrices
+
+        : param x: np.array the first matrix
+        : param y: np.array the second matrix
+        : return: np.array the euclidean distance matrix between the two matrices
+
+        Usage example:
+        >>> x: np.array = np.array([1, 2, 3])
+        >>> y: np.array = np.array([4, 5, 6])
+        >>> euclideanDistance(x, y)
+        '''
+        x = np.array(x)
+        y = np.array(y)
+        x_expanded = x[:, np.newaxis, :]
+        y_expanded = y[np.newaxis, :, :]
+        return np.sqrt(np.sum((x_expanded - y_expanded) ** 2, axis=2))

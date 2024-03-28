@@ -1,32 +1,47 @@
 import os
 import numpy as np
+import multiprocessing as mp
 
 class Vocab():
-    '''
-    Class Vocab: this class is used to load the embeddings from a file
-    '''
     def __init__(self, embPath: str) -> None:
-        '''
-        Initialization of the Vocab Object
-        '''
+        self.load_parallel(embPath)
 
-        self.load(embPath)
-    
-    def load(self, embPath: str) -> None:
-        
-        '''
-        Load method: this method is used to load the embeddings from the file
-        : param embPath: str the path to the embeddings file
-        '''
-
-        embeddings = {}
-        #verify if the file exists
+    def load_parallel(self, embPath: str) -> None:
         if not os.path.exists(embPath):
             raise FileNotFoundError(f"File {embPath} not found")
+
+        # Determine the number of processes based on the available CPUs
+        num_processes = mp.cpu_count()
+
+        # Determine the size of each chunk to be processed by each process
+        fileSize = os.path.getsize(embPath)
+        chunkSize = fileSize // num_processes
+
+        # Create a pool of processes
+        with mp.Pool(processes=num_processes) as pool:
+            # Map each chunk to a separate process
+            results = pool.map(func=self.load_chunk, iterable=[(embPath, i * chunkSize, (i+1) * chunkSize) for i in range(num_processes)])
+
+        # Combine the results from all processes
+        self.embeddings = {}
+        for result in results:
+            self.embeddings.update(result)
+
+    def load_chunk(self, args) -> dict:
+        embPath, start, end = args
+        embeddings = {}
+
         with open(embPath, 'r') as file:
-            for line in file:
+            if start != 0:
+                file.seek(start)
+                file.readline()  # Skip the first line as it may be incomplete
+            while file.tell() < end:
+                line = file.readline()
+                if not line:
+                    break  # End of file
                 values = line.split()
                 word = values[0]
                 vector = np.asarray(values[1:], "float32")
                 embeddings[word] = vector
-        self.embeddings = embeddings
+
+        return embeddings
