@@ -71,6 +71,28 @@ class Mechanism():
         assert kwargs['epsilon'] > 0, 'The epsilon parameter must be greater than 0'
         self.epsilon: float = kwargs['epsilon']
 
+    def pullNoise(self) -> np.array:
+        '''
+        method pullNoise: this method is used to pull noise accordingly 
+        to the definition of the CMP mechanism, see BibTeX ref
+
+        : return: np.array the noise pulled
+
+        Usage example:
+        (Considering that the Mechanism Object mech1 has been created 
+        as in the example of the __init__ method)
+        >>> mech1.pullNoise()
+        '''
+        N = self.epsilon * npr.multivariate_normal(
+            np.zeros(self.embMatrix.shape[1]),
+            np.eye(self.embMatrix.shape[1]))
+        X = N / np.sqrt(np.sum(N ** 2))
+        Y = npr.gamma(
+            self.embMatrix.shape[1],
+            1 / self.epsilon)
+        Z = Y * X
+        return Z
+
     def obfuscateText(self, data: str, numberOfCores: int) -> List[str]:
         '''
         method obfuscateText: this method is used to obfuscate the text of the provided text using the CMP mechanism
@@ -85,6 +107,7 @@ class Mechanism():
         with mp.Pool(numberOfCores) as p:
             tasks = [self.noisyEmb(words) for i in range(numberOfCores)]
             results.append(p.map(self.processQuery, tasks))
+        results = [item for sublist in results for item in sublist]
         return results
 
     def noisyEmb(self, words: List[str]) -> np.array:
@@ -108,28 +131,6 @@ class Mechanism():
         for i in range(length):
             finalQuery.append(list(self.vocab.embeddings.keys())[closest[i][0]])
         return ' '.join(finalQuery)
-
-    def pullNoise(self) -> np.array:
-        '''
-        method pullNoise: this method is used to pull noise accordingly 
-        to the definition of the CMP mechanism, see BibTeX ref
-
-        : return: np.array the noise pulled
-
-        Usage example:
-        (Considering that the Mechanism Object mech1 has been created 
-        as in the example of the __init__ method)
-        >>> mech1.pullNoise()
-        '''
-        N = self.epsilon * npr.multivariate_normal(
-            np.zeros(self.embMatrix.shape[1]),
-            np.eye(self.embMatrix.shape[1]))
-        X = N / np.sqrt(np.sum(N ** 2))
-        Y = npr.gamma(
-            self.embMatrix.shape[1],
-            1 / self.epsilon)
-        Z = Y * X
-        return Z
     
     @staticmethod
     def euclideanDistance(x: np.array, 
