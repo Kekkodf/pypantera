@@ -44,75 +44,20 @@ class VickreyMhl(Mahalanobis):
         >>> mech1 = Mahalanobis({'embPath': embPath, 'epsilon': eps, 'lambda': lam})
         '''
         super().__init__(kwargs)
-        assert 'lambda' in kwargs, 'The lambda parameter must be provided'
-        assert kwargs['lambda'] >= 0 and kwargs['lambda'] <= 1, 'The lambda parameter must be between 0 and 1'
-        self.lam: float = kwargs['lambda']
-        cov_mat = np.cov(self.embMatrix.T, ddof=0)
-        sigma = cov_mat/ np.mean(np.var(self.embMatrix.T, axis=1))
-        self.sigmaLoc = sqrtm(self.lam * sigma + (1 - self.lam) * np.eye(self.embMatrix.shape[1]))      
-
-    def pullNoise(self) -> np.array:
-        '''
-        method pullNoise: this method is used to pull noise accordingly 
-        to the definition of the Mahalanobis mechanism, see BibTeX ref
-
-        : return: np.array the noise pulled
-
-        Usage example:
-        (Considering that the Mechanism Object mech1 has been created 
-        as in the example of the __init__ method)
-        >>> mech1.pullNoise()
-        '''
-        N = npr.multivariate_normal(
-            np.zeros(self.embMatrix.shape[1]), 
-            np.eye(self.embMatrix.shape[1])
-            )
-        X = N / np.sqrt(np.sum(N ** 2))
-        X = np.dot(self.sigmaLoc, X)
-        X = X / np.sqrt(np.sum(X ** 2))
-        Y = npr.gamma(
-            self.embMatrix.shape[1], 
-            1 / self.epsilon
-            )
-        Z = Y * X
-        return Z
-    
-    def obfuscateText(self, data: str, numberOfCores: int) -> List[str]:
-        '''
-        method obfuscateText: this method is used to obfuscate the text of the provided text 
-        using the Mahalanobis mechanism
-
-        : param data: str the text to obfuscate
-        : param numberOfCores: int the number of cores to use for the obfuscation
-
-        : return: str the obfuscated text
-        '''
-        words = data.split() #split query into words
-        results = []
-        with mp.Pool(numberOfCores) as p:
-            tasks = [self.noisyEmb(words) for i in range(numberOfCores)]
-            results.append(p.map(self.processQuery, tasks))
-        results = [item for sublist in results for item in sublist]
-        return results
-
-    def noisyEmb(self, words: List[str]) -> np.array:
-        embs = []
-        for word in words:
-            if word not in self.vocab.embeddings:
-                embs.append(
-                    np.zeros(self.embMatrix.shape[1]) + npr.normal(0, 1, self.embMatrix.shape[1]) #handle OoV words
-                    + self.pullNoise()
-                    )
-            else:
-                embs.append(self.vocab.embeddings[word] + self.pullNoise())
-        return np.array(embs)
+        assert 't' in kwargs, 'The t parameter must be provided'
+        assert kwargs['t'] >= 0 and kwargs['t'] <= 1, 'The t parameter must be between 0 and 1'
+        self.t: float = kwargs['t']      
 
     def processQuery(self, 
                      embs: np.array) -> str:
-        length = len(embs)
-        distance = self.euclideanDistance(embs, self.embMatrix)
-        closest = np.argpartition(distance, 1, axis=1)[:, :1]
-        finalQuery = []
+        length: int = len(embs)
+        distance: np.array = self.euclideanDistance(embs, self.embMatrix)
+        closest: np.array = np.argpartition(distance, 2, axis=1)[:, :2]
+        distToClosest: np.array = distance[np.tile(np.arange(length).reshape(-1,1),2), closest]
+        p = ((1- self.t) * distToClosest[:,1]) / (self.t * distToClosest[:,0] + (1 - self.t) * distToClosest[:, 1])
+        vickreyChoise: np.array = np.array([npr.choise(2, p=[p[w], 1-p[w]]) for w in range(length)])
+        noisyEmbeddings: np.array = self.embMatrix[closest[np.arange(length), vickreyChoise]]
+        finalQuery: List[str] = []
         for i in range(length):
-            finalQuery.append(list(self.vocab.embeddings.keys())[closest[i][0]])
+            finalQuery.append(list(self.vocab.embeddings.keys())[noisyEmbeddings[i][0]])
         return ' '.join(finalQuery)

@@ -69,18 +69,18 @@ class Mahalanobis(Mechanism):
         as in the example of the __init__ method)
         >>> mech1.pullNoise()
         '''
-        N = npr.multivariate_normal(
+        N: np.array = npr.multivariate_normal(
             np.zeros(self.embMatrix.shape[1]), 
             np.eye(self.embMatrix.shape[1])
             )
-        X = N / np.sqrt(np.sum(N ** 2))
-        X = np.dot(self.sigmaLoc, X)
-        X = X / np.sqrt(np.sum(X ** 2))
-        Y = npr.gamma(
+        X: np.array = N / np.sqrt(np.sum(N ** 2))
+        X: np.array = np.dot(self.sigmaLoc, X)
+        X: np.array = X / np.sqrt(np.sum(X ** 2))
+        Y: np.array = npr.gamma(
             self.embMatrix.shape[1], 
             1 / self.epsilon
             )
-        Z = Y * X
+        Z: np.array = Y * X
         return Z
     
     def obfuscateText(self, data: str, numberOfCores: int) -> List[str]:
@@ -93,7 +93,7 @@ class Mahalanobis(Mechanism):
 
         : return: str the obfuscated text
         '''
-        words = data.split() #split query into words
+        words: List[str] = data.split() #split query into words
         results = []
         with mp.Pool(numberOfCores) as p:
             tasks = [self.noisyEmb(words) for i in range(numberOfCores)]
@@ -102,7 +102,7 @@ class Mahalanobis(Mechanism):
         return results
 
     def noisyEmb(self, words: List[str]) -> np.array:
-        embs = []
+        embs: List[np.array] = []
         for word in words:
             if word not in self.vocab.embeddings:
                 embs.append(
@@ -115,10 +115,10 @@ class Mahalanobis(Mechanism):
 
     def processQuery(self, 
                      embs: np.array) -> str:
-        length = len(embs)
-        distance = self.euclideanDistance(embs, self.embMatrix)
-        closest = np.argpartition(distance, 1, axis=1)[:, :1]
-        finalQuery = []
+        length: int = len(embs)
+        distance: np.array = self.euclideanDistance(embs, self.embMatrix)
+        closest: np.array = np.argpartition(distance, 1, axis=1)[:, :1]
+        finalQuery: List[str] = []
         for i in range(length):
             finalQuery.append(list(self.vocab.embeddings.keys())[closest[i][0]])
         return ' '.join(finalQuery)
