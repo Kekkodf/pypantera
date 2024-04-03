@@ -1,5 +1,5 @@
 # pyPANTER
-## Python **P**ackage for n**A**tural la**N**guage obfusca**T**ion prot**E**cting p**R**ivacy.
+## Python **P**ackage for n**A**tural la**N**guage obfusca**T**ion **E**nforcing p**R**ivacy.
 <p align="center">
     <img src="./images/pyPANTER.webp" width="255">
 </p>
