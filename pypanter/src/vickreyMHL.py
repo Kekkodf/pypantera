@@ -18,7 +18,7 @@ class VickreyMhl(Mahalanobis):
     url={https://www.semanticscholar.org/reader/dfd8fc9966ca8ec5c8bdc2dfc94099285f0e07a9}
     }
     '''
-    def __init__(self, kwargs: dict) -> None:
+    def __init__(self, mech: Mahalanobis, t: float) -> None:
         '''
         Initialization of the Mahalanobis Object
 
@@ -42,22 +42,34 @@ class VickreyMhl(Mahalanobis):
         >>> eps: float = 0.1 #anyvalue of epsilon must be greater than 0
         >>> lam: float = 0.1 #anyvalue of lambda must be between 0 and 1
         >>> mech1 = Mahalanobis({'embPath': embPath, 'epsilon': eps, 'lambda': lam})
+        >>> vickreyMech1 = VickreyMhl(mech1, {'t': 0.5})
         '''
-        super().__init__(kwargs)
-        assert 't' in kwargs, 'The t parameter must be provided'
-        assert kwargs['t'] >= 0 and kwargs['t'] <= 1, 'The t parameter must be between 0 and 1'
-        self.t: float = kwargs['t']      
+        super().__init__(mech.__dict__)
+        assert t >= 0 and t <= 1, 'The t parameter must be between 0 and 1'
+        self.t: float = t     
 
     def processQuery(self, 
                      embs: np.array) -> str:
-        length: int = len(embs)
-        distance: np.array = self.euclideanDistance(embs, self.embMatrix)
-        closest: np.array = np.argpartition(distance, 2, axis=1)[:, :2]
-        distToClosest: np.array = distance[np.tile(np.arange(length).reshape(-1,1),2), closest]
-        p = ((1- self.t) * distToClosest[:,1]) / (self.t * distToClosest[:,0] + (1 - self.t) * distToClosest[:, 1])
-        vickreyChoise: np.array = np.array([npr.choise(2, p=[p[w], 1-p[w]]) for w in range(length)])
-        noisyEmbeddings: np.array = self.embMatrix[closest[np.arange(length), vickreyChoise]]
+        '''
+        method processQuery: this method is used to process the query accordingly
+        to the definition of the Vickrey mechanism, see BibTeX ref
+
+        : param embs: np.array the embeddings of the query
+        : return: str the obfuscated query
+
+        Usage example:
+        (Considering that the Mechanism Object mech1 has been created
+        as in the example of the __init__ method)
+        
+        '''
+        length: int = len(embs) #compute number of words
+        distance: np.array = self.euclideanDistance(embs, self.embMatrix) #compute distances between words and embeddings in the vocabulary
+        closest: np.array = np.argpartition(distance, 2, axis=1)[:, :2] #find the two closest embeddings for each word
+        distToClosest: np.array = distance[np.tile(np.arange(length).reshape(-1,1),2), closest] #compute the distances to the two closest embeddings
+        p = ((1- self.t) * distToClosest[:,1]) / (self.t * distToClosest[:,0] + (1 - self.t) * distToClosest[:, 1]) #compute the probabilities of choosing the second closest embedding
+        vickreyChoise: np.array = np.array([npr.choise(2, p=[p[w], 1-p[w]]) for w in range(length)]) #choose the closest embedding according to the probabilities
+        noisyEmbeddings: np.array = self.embMatrix[closest[np.arange(length), vickreyChoise]] #get the noisy embeddings
         finalQuery: List[str] = []
         for i in range(length):
-            finalQuery.append(list(self.vocab.embeddings.keys())[noisyEmbeddings[i][0]])
+            finalQuery.append(list(self.vocab.embeddings.keys())[noisyEmbeddings[i][0]]) #get the words corresponding to the noisy embeddings
         return ' '.join(finalQuery)

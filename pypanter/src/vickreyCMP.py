@@ -50,14 +50,14 @@ class VickreyCMP(Mechanism):
 
     def processQuery(self, 
                      embs: np.array) -> str:
-        length: int = len(embs)
-        distance: np.array = self.euclideanDistance(embs, self.embMatrix)
-        closest: np.array = np.argpartition(distance, 2, axis=1)[:, :2]
-        distToClosest: np.array = distance[np.tile(np.arange(length).reshape(-1,1),2), closest]
-        p = ((1- self.t) * distToClosest[:,1]) / (self.t * distToClosest[:,0] + (1 - self.t) * distToClosest[:, 1])
-        vickreyChoise: np.array = np.array([npr.choise(2, p=[p[w], 1-p[w]]) for w in range(length)])
-        noisyEmbeddings: np.array = self.embMatrix[closest[np.arange(length), vickreyChoise]]
+        length: int = len(embs) #compute number of words
+        distance: np.array = self.euclideanDistance(embs, self.embMatrix) #compute distances between words and embeddings in the vocabulary
+        closest: np.array = np.argpartition(distance, 2, axis=1)[:, :2] #find the two closest embeddings for each word
+        distToClosest: np.array = distance[np.tile(np.arange(length).reshape(-1,1),2), closest] #compute the distances to the two closest embeddings
+        p = ((1- self.t) * distToClosest[:,1]) / (self.t * distToClosest[:,0] + (1 - self.t) * distToClosest[:, 1]) #compute the probabilities of choosing the second closest embedding
+        vickreyChoise: np.array = np.array([npr.choise(2, p=[p[w], 1-p[w]]) for w in range(length)]) #choose the closest embedding according to the probabilities
+        noisyEmbeddings: np.array = self.embMatrix[closest[np.arange(length), vickreyChoise]] #get the noisy embeddings
         finalQuery: List[str] = []
         for i in range(length):
-            finalQuery.append(list(self.vocab.embeddings.keys())[noisyEmbeddings[i][0]])
+            finalQuery.append(list(self.vocab.embeddings.keys())[noisyEmbeddings[i][0]]) #get the words corresponding to the noisy embeddings
         return ' '.join(finalQuery)

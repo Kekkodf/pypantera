@@ -54,18 +54,18 @@ class Mechanism():
         >>> eps: float = 0.1 #anyvalue of epsilon must be greater than 0
         >>> mech1 = Mechanism({'embPath': embPath, 'epsilon': eps})
         '''
-        self.vocab: Vocab = Vocab(kwargs['embPath'])
+        self.vocab: Vocab = Vocab(kwargs['embPath']) #load the vocabulary
         self.embMatrix: np.array = np.array(
             list(self.vocab.embeddings.values())
-            )
+            ) #load the embeddings matrix
         self.index2word: dict = {
             i: word 
             for i, word in enumerate(self.vocab.embeddings.keys())
-            }
+            } #create the index to word mapping
         self.word2index: dict = {
             word: i 
             for i, word in enumerate(self.vocab.embeddings.keys())
-            }
+            } #create the word to index mapping
 
         assert 'epsilon' in kwargs, 'The epsilon parameter must be provided'
         assert kwargs['epsilon'] > 0, 'The epsilon parameter must be greater than 0'
@@ -85,12 +85,12 @@ class Mechanism():
         '''
         N: np.array = self.epsilon * npr.multivariate_normal(
             np.zeros(self.embMatrix.shape[1]),
-            np.eye(self.embMatrix.shape[1]))
-        X: np.array = N / np.sqrt(np.sum(N ** 2))
+            np.eye(self.embMatrix.shape[1])) #pull noise from a multivariate normal distribution
+        X: np.array = N / np.sqrt(np.sum(N ** 2)) #normalize the noise
         Y: np.array = npr.gamma(
             self.embMatrix.shape[1],
-            1 / self.epsilon)
-        Z: np.array = Y * X
+            1 / self.epsilon) #pull gamma noise
+        Z: np.array = Y * X #compute the final noise
         return Z
 
     def obfuscateText(self, data: str, numberOfCores: int) -> List[str]:
@@ -101,17 +101,36 @@ class Mechanism():
         : param numberOfCores: int the number of cores to use for the obfuscation
 
         : return: str the obfuscated text
+
+        Usage example:
+        (Considering that the Mechanism Object mech1 has been created
+        as in the example of the __init__ method)
+        >>> data: str = 'This is a query to obfuscate'
+        >>> numberOfCores: int = 4
+        >>> mech1.obfuscateText(data, numberOfCores)
         '''
         words = data.split() #split query into words
         results: List = []
-        with mp.Pool(numberOfCores) as p:
+        with mp.Pool(numberOfCores) as p: #use multiprocessing to speed up the obfuscation
             tasks = [self.noisyEmb(words) for i in range(numberOfCores)]
             results.append(p.map(self.processQuery, tasks))
-        results = [item for sublist in results for item in sublist]
+        results = [item for sublist in results for item in sublist] #flatten the results
         return results
 
-    def noisyEmb(self, words: List[str]) -> np.array:
-        embs: List = []
+    def noisyEmb(self, words: List[str]) -> np.array: 
+        '''
+        method noisyEmb: this method is used to add noise to the embeddings of the words
+
+        : param words: List[str] the list of words to add noise to
+        : return: np.array the noisy embeddings
+
+        Usage example:
+        (Considering that the Mechanism Object mech1 has been created
+        as in the example of the __init__ method)
+        >>> words: List[str] = ['word1', 'word2', 'word3']
+        >>> mech1.noisyEmb(words)
+        '''
+        embs: List[np.array] = []
         for word in words:
             if word not in self.vocab.embeddings:
                 embs.append(
@@ -124,6 +143,21 @@ class Mechanism():
 
     def processQuery(self, 
                      embs: np.array) -> str:
+        '''
+        method processQuery: this method is used to process the query and return the obfuscated query
+
+        : param embs: np.array the embeddings of the words
+        : return: str the obfuscated query
+
+        Usage example:
+        (Considering that the Mechanism Object mech1 has been created
+        as in the example of the __init__ method)
+
+        # Assuming that the embeddings of the words are known, e.g.: [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+        >>> embs: np.array = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+        >>> mech1.processQuery(embs)
+        '''
+
         length: int = len(embs)
         distance: np.array = self.euclideanDistance(embs, self.embMatrix)
         closest: np.array = np.argpartition(distance, 1, axis=1)[:, :1]

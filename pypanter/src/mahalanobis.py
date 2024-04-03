@@ -53,9 +53,9 @@ class Mahalanobis(Mechanism):
         assert 'lambda' in kwargs, 'The lambda parameter must be provided'
         assert kwargs['lambda'] >= 0 and kwargs['lambda'] <= 1, 'The lambda parameter must be between 0 and 1'
         self.lam: float = kwargs['lambda']
-        cov_mat = np.cov(self.embMatrix.T, ddof=0)
-        sigma = cov_mat/ np.mean(np.var(self.embMatrix.T, axis=1))
-        self.sigmaLoc = sqrtm(self.lam * sigma + (1 - self.lam) * np.eye(self.embMatrix.shape[1]))      
+        cov_mat = np.cov(self.embMatrix.T, ddof=0) #compute the covariance matrix
+        sigma = cov_mat/ np.mean(np.var(self.embMatrix.T, axis=1)) #compute the sigma matrix
+        self.sigmaLoc: np.array = sqrtm(self.lam * sigma + (1 - self.lam) * np.eye(self.embMatrix.shape[1])) #compute the sigmaLoc matrix   
 
     def pullNoise(self) -> np.array:
         '''
@@ -72,53 +72,13 @@ class Mahalanobis(Mechanism):
         N: np.array = npr.multivariate_normal(
             np.zeros(self.embMatrix.shape[1]), 
             np.eye(self.embMatrix.shape[1])
-            )
-        X: np.array = N / np.sqrt(np.sum(N ** 2))
-        X: np.array = np.dot(self.sigmaLoc, X)
-        X: np.array = X / np.sqrt(np.sum(X ** 2))
+            ) #pull noise from a multivariate normal distribution
+        X: np.array = N / np.sqrt(np.sum(N ** 2)) #normalize the noise
+        X: np.array = np.dot(self.sigmaLoc, X) #apply the sigmaLoc matrix to the noise
+        X: np.array = X / np.sqrt(np.sum(X ** 2)) #normalize the noise
         Y: np.array = npr.gamma(
             self.embMatrix.shape[1], 
             1 / self.epsilon
-            )
-        Z: np.array = Y * X
+            ) #pull gamma noise
+        Z: np.array = Y * X #compute the final noise
         return Z
-    
-    def obfuscateText(self, data: str, numberOfCores: int) -> List[str]:
-        '''
-        method obfuscateText: this method is used to obfuscate the text of the provided text 
-        using the Mahalanobis mechanism
-
-        : param data: str the text to obfuscate
-        : param numberOfCores: int the number of cores to use for the obfuscation
-
-        : return: str the obfuscated text
-        '''
-        words: List[str] = data.split() #split query into words
-        results = []
-        with mp.Pool(numberOfCores) as p:
-            tasks = [self.noisyEmb(words) for i in range(numberOfCores)]
-            results.append(p.map(self.processQuery, tasks))
-        results = [item for sublist in results for item in sublist]
-        return results
-
-    def noisyEmb(self, words: List[str]) -> np.array:
-        embs: List[np.array] = []
-        for word in words:
-            if word not in self.vocab.embeddings:
-                embs.append(
-                    np.zeros(self.embMatrix.shape[1]) + npr.normal(0, 1, self.embMatrix.shape[1]) #handle OoV words
-                    + self.pullNoise()
-                    )
-            else:
-                embs.append(self.vocab.embeddings[word] + self.pullNoise())
-        return np.array(embs)
-
-    def processQuery(self, 
-                     embs: np.array) -> str:
-        length: int = len(embs)
-        distance: np.array = self.euclideanDistance(embs, self.embMatrix)
-        closest: np.array = np.argpartition(distance, 1, axis=1)[:, :1]
-        finalQuery: List[str] = []
-        for i in range(length):
-            finalQuery.append(list(self.vocab.embeddings.keys())[closest[i][0]])
-        return ' '.join(finalQuery)
