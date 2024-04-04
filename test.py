@@ -1,10 +1,10 @@
-from pypanter.src.mechanism import Mechanism
-from pypanter.src.santext import SanText
-from pypanter.src.wbb import WBB
-from pypanter.src.tem import TEM
-from pypanter.src.cmp import CMP
-from pypanter.src.mahalanobis import Mahalanobis
-from pypanter.src.vickrey import Vickrey
+from pypantera.src.mechanism import Mechanism
+from pypantera.src.santext import SanText
+from pypantera.src.wbb import WBB
+from pypantera.src.tem import TEM
+from pypantera.src.cmp import CMP
+from pypantera.src.mahalanobis import Mahalanobis
+from pypantera.src.vickrey import Vickrey
 import time
 import numpy as np
 import pandas as pd
