@@ -29,9 +29,9 @@ import pypantera
 Test package for natural language obfuscation.
 
 ```python
-from pypantera import pantherTest
+from pypantera import panteraTest
 
-pantherTest()
+panteraTest()
 ```
 
 
