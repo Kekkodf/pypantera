@@ -1,4 +1,4 @@
-from .mechanism import Mechanism
+from .cmp import CMP
 from .mahalanobis import Mahalanobis
 import numpy as np
 import numpy.random as npr
