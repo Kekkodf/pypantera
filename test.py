@@ -14,7 +14,7 @@ def main() -> None:
     #with open('site/embPath.txt', 'r') as f:
     #    embPath: str = f.readline().strip()
     #print(f"Embeddings file path: {embPath}")
-    embPath: str = 'glove_6B_50d.txt'
+    #embPath: str = 'glove_6B_50d.txt'
 
     #initialization of the mechanisms
     #mech1: Mechanism = Mechanism({'embPath': embPath, 'epsilon': 0.1})

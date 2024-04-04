@@ -26,6 +26,12 @@ import pypanter
 
 ## What can pyPANTER do?
 
+Test package for natural language obfuscation.
 
+```python
+from pypanter import panterTest
+
+panterTest()
+```
 
 [^1]: Prompt for DALL-E pyPANTER generation: "A cute panther sitting beside the Python programming language symbol. The panther should have big, expressive eyes and a friendly demeanor, sitting in."
