@@ -2,6 +2,8 @@ from .utils.vocab import Vocab
 import numpy as np
 import os
 from typing import List
+import numpy.random as npr
+import multiprocessing as mp
 
 class Mechanism():
     def __init__(self, kwargs) -> None:
@@ -56,14 +58,10 @@ class Mechanism():
         >>> numberOfCores: int = 4
         >>> mech1.obfuscateText(data, numberOfCores)
         '''
-        words = data.split() #split query into words
-        results: List = []
-        with mp.Pool(numberOfCores) as p: #use multiprocessing to speed up the obfuscation
-            tasks = [self.noisyEmb(words) for i in range(numberOfCores)]
-            results.append(p.map(self.processQuery, tasks))
-        results = [item for sublist in results for item in sublist] #flatten the results
+        words: List[str] = data.split() #split query into words
+        results: List = self.multiCoreObfuscateText(words, numberOfCores) #flatten the results
         return results
-
+                                 
     def noisyEmb(self, words: List[str]) -> np.array: 
         '''
         method noisyEmb: this method is used to add noise to the embeddings of the words
@@ -135,3 +133,27 @@ class Mechanism():
         x_expanded: np.array = x[:, np.newaxis, :]
         y_expanded: np.array = y[np.newaxis, :, :]
         return np.sqrt(np.sum((x_expanded - y_expanded) ** 2, axis=2))
+    
+    @staticmethod
+    def multiCoreObfuscateText(self, words: List[str],
+                               numberOfCores: int) -> List[str]:
+        '''
+        method multiCoreObfuscateText: this method is used to obfuscate the text parallelly
+
+        : param words: List[str] the list of words to obfuscate
+        : param numberOfCores: int the number of cores to use for the obfuscation
+
+        : return: List[str] the list of obfuscated queries
+
+        Usage example:
+
+        >>> words: List[str] = ['word1', 'word2', 'word3']
+        >>> numberOfCores: int = 4
+        >>> multiCoreObfuscateText(words, numberOfCores)
+        '''
+
+        with mp.Pool(numberOfCores) as p: #use multiprocessing to speed up the obfuscation
+            tasks = [self.noisyEmb(words) for i in range(numberOfCores)]
+            results.append(p.map(self.processQuery, tasks))
+        results = [item for sublist in results for item in sublist]
+        return results

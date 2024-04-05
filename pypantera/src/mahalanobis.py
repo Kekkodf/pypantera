@@ -52,6 +52,9 @@ class Mahalanobis(Mechanism):
         super().__init__(kwargs)
         assert 'lambda' in kwargs, 'The lambda parameter must be provided'
         assert kwargs['lambda'] >= 0 and kwargs['lambda'] <= 1, 'The lambda parameter must be between 0 and 1'
+        assert 'epsilon' in kwargs, 'The epsilon parameter must be provided'
+        assert kwargs['epsilon'] > 0, 'The epsilon parameter must be greater than 0'
+        self.epsilon: float = kwargs['epsilon']
         self.lam: float = kwargs['lambda']
         cov_mat = np.cov(self.embMatrix.T, ddof=0) #compute the covariance matrix
         sigma = cov_mat/ np.mean(np.var(self.embMatrix.T, axis=1)) #compute the sigma matrix
