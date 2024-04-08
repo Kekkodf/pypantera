@@ -7,7 +7,12 @@ import os
 from typing import List
 
 '''
-    BibTeX of CMP Mechanism, base mechanism class of the pypanter package:
+CMP Mechanism
+'''
+
+class CMP(Mechanism):
+    '''
+    BibTeX of CMP Mechanism, extends Mechanism mechanism class of the pypantera package:
 
     @inproceedings{FeyisetanEtAl2020CMP,
     author = {Feyisetan, Oluwaseyi and Balle, Borja and Drake, Thomas and Diethe, Tom},
@@ -26,11 +31,6 @@ from typing import List
     location = {Houston, TX, USA},
     series = {WSDM '20}
     }
-'''
-
-class CMP(Mechanism):
-    '''
-    Class Mechanism: this class is used to create a mechanism object that obfuscate a provided Query Object
     '''
     
     def __init__(self, kwargs: dict) -> None:
@@ -55,6 +55,7 @@ class CMP(Mechanism):
         >>> eps: float = 0.1 #anyvalue of epsilon must be greater than 0
         >>> mech1 = Mechanism({'embPath': embPath, 'epsilon': eps})
         '''
+
         super().__init__(kwargs)
         assert 'epsilon' in kwargs, 'The epsilon parameter must be provided'
         assert kwargs['epsilon'] > 0, 'The epsilon parameter must be greater than 0'
@@ -72,6 +73,7 @@ class CMP(Mechanism):
         as in the example of the __init__ method)
         >>> mech1.pullNoise()
         '''
+
         N: np.array = self.epsilon * npr.multivariate_normal(
             np.zeros(self.embMatrix.shape[1]),
             np.eye(self.embMatrix.shape[1])) #pull noise from a multivariate normal distribution
@@ -82,56 +84,9 @@ class CMP(Mechanism):
         Z: np.array = Y * X #compute the final noise
         return Z
 
-    def obfuscateText(self, data: str, numberOfCores: int) -> List[str]:
-        '''
-        method obfuscateText: this method is used to obfuscate the text of the provided text using the CMP mechanism
-
-        : param data: str the text to obfuscate
-        : param numberOfCores: int the number of cores to use for the obfuscation
-
-        : return: str the obfuscated text
-
-        Usage example:
-        (Considering that the Mechanism Object mech1 has been created
-        as in the example of the __init__ method)
-        >>> data: str = 'This is a query to obfuscate'
-        >>> numberOfCores: int = 4
-        >>> mech1.obfuscateText(data, numberOfCores)
-        '''
-        words = data.split() #split query into words
-        results: List = []
-        with mp.Pool(numberOfCores) as p: #use multiprocessing to speed up the obfuscation
-            tasks = [self.noisyEmb(words) for i in range(numberOfCores)]
-            results.append(p.map(self.processQuery, tasks))
-        results = [item for sublist in results for item in sublist] #flatten the results
-        return results
-
-    def noisyEmb(self, words: List[str]) -> np.array: 
-        '''
-        method noisyEmb: this method is used to add noise to the embeddings of the words
-
-        : param words: List[str] the list of words to add noise to
-        : return: np.array the noisy embeddings
-
-        Usage example:
-        (Considering that the Mechanism Object mech1 has been created
-        as in the example of the __init__ method)
-        >>> words: List[str] = ['word1', 'word2', 'word3']
-        >>> mech1.noisyEmb(words)
-        '''
-        embs: List[np.array] = []
-        for word in words:
-            if word not in self.vocab.embeddings:
-                embs.append(
-                    np.zeros(self.embMatrix.shape[1]) + npr.normal(0, 1, self.embMatrix.shape[1]) #handle OoV words
-                    + self.pullNoise()
-                    )
-            else:
-                embs.append(self.vocab.embeddings[word] + self.pullNoise())
-        return np.array(embs)
-
     def processQuery(self, 
                      embs: np.array) -> str:
+        
         '''
         method processQuery: this method is used to process the query and return the obfuscated query
 

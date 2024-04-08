@@ -7,9 +7,11 @@ import pandas as pd
 import os
 from typing import List
 import argparse
+
+from pypantera.src.mechanism import Mechanism
 from pypantera.src.cmp import CMP
 from pypantera.src.mahalanobis import Mahalanobis
-from pypantera.src.vickrey import Vickrey
+from pypantera.src.vickrey import VickreyCMP, VickreyMhl
 
 def main() -> None:
     t0: time = time.time()
@@ -22,12 +24,19 @@ def main() -> None:
     #initialization of the mechanisms
     #mech1: Mechanism = Mechanism({'embPath': embPath, 'epsilon': 40})
     text = 'what is the capitol of france'
-    #mech1: CMP = CMP({'embPath': embPath, 'epsilon':4})
-    #obfuscatedText = mech1.obfuscateText(text, 1)
-    #print(f"Obfuscated text: {obfuscatedText}")
-    #mech1: Mahalanobis = Mahalanobis({'embPath': embPath, 'epsilon': 0.1, 'lambda': 1})
-    #obfuscatedText = mech1.obfuscateText(text, 1)
-    mech1: Vickrey
+    mech1: CMP = CMP({'embPath': embPath, 'epsilon':4})
+    obfuscatedText = mech1.obfuscateText(text, 1)
+    print(f"Obfuscated text: {obfuscatedText}")
+    mech1: Mahalanobis = Mahalanobis({'embPath': embPath, 'epsilon': 0.1, 'lambda': 1})
+    obfuscatedText = mech1.obfuscateText(text, 1)
+    print(f"Obfuscated text: {obfuscatedText}")
+    #mech1: VickreyCMP = VickreyCMP({'embPath': embPath, 'epsilon': 0.1, 't': 0.5})
+    #print(mech1.epsilon)
+    #print(mech1.t)
+    #mech1: VickreyMhl = VickreyMhl({'embPath': embPath, 'epsilon': 0.1, 'lambda': 1, 't': 0.5})
+    #print(mech1.epsilon)
+    #print(mech1.lam)
+    #print(mech1.t)
     #print(f"Obfuscated text: {obfuscatedText}")
     #mech1: Vickrey.CMP = Vickrey.CMP({'embPath': embPath, 'epsilon': 0.1, 'lambda': 1, 't': 0.5})
     #mech2: Vickrey.Mhl = Vickrey.Mhl({'embPath': embPath, 'epsilon': 0.1, 'lambda': 1, 't': 0.5})
