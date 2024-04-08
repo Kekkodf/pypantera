@@ -1,4 +1,5 @@
 from .utils.vocab import Vocab
+
 import numpy as np
 import os
 from typing import List
@@ -55,9 +56,17 @@ class Mechanism():
         '''
         method obfuscateText: this method is used to obfuscate the text of the provided text 
         using the Mahalanobis mechanism
+
         : param data: str the text to obfuscate
         : param numberOfCores: int the number of cores to use for the obfuscation
         : return: str the obfuscated text
+
+        Usage example:
+        (Considering that the Mechanism Object mech1 has been created
+        as in the example of the __init__ method)
+
+        >>> text: str = 'what is the capitol of france'
+        >>> mech1.obfuscateText(text, 1)
         '''
 
         words = data.split() #split query into words
@@ -85,7 +94,7 @@ class Mechanism():
         >>> y: np.array = np.array([4, 5, 6])
         >>> euclideanDistance(x, y)
         '''
-        
+
         x: np.array = np.array(x)
         y: np.array = np.array(y)
         x_expanded: np.array = x[:, np.newaxis, :]
