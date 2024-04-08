@@ -51,6 +51,7 @@ class WBB(Mechanism):
         self.posTags: List[str] = kwargs['listOfTags']
         assert 'metricFunction' in kwargs, 'The metricFunction parameter must be provided'
         self.metricFunction: str = kwargs['metricFunction']
+        
 
     def noisyEmb(self, words: List[str]) -> np.array:
         '''
@@ -65,20 +66,22 @@ class WBB(Mechanism):
         >>> words: List[str] = ['what', 'is', 'the', 'capitol', 'of', 'france']
         >>> mech1.noisyEmb(words)
         '''
-
+        self.wordsNotConsidered: List[str] = []
         embs: List = []
         #compute the taggs of the words
         words: List[tuple] = pos_tag(words)
-        print(words)
-        print(type(words))
-        exit()
         for word in words:
-            if word not in self.vocab.embeddings:
-                embs.append(
-                    np.zeros(self.embMatrix.shape[1]) + npr.normal(0, 1, self.embMatrix.shape[1]) #handle OoV words
-                    )
+            if word[1] in self.posTags:
+                if word[0] not in self.vocab.embeddings:
+                    embs.append(
+                        np.zeros(self.embMatrix.shape[1]) + npr.normal(0, 1, self.embMatrix.shape[1]) #handle OoV words
+                        )
+                    self.wordsNotConsidered.append('_')
+                else:
+                    embs.append(self.vocab.embeddings[word[0]])
+                    self.wordsNotConsidered.append('_')
             else:
-                embs.append(self.vocab.embeddings[word])
+                self.wordsNotConsidered.append(word[0])
         return np.array(embs)
 
     def processQuery(self,
@@ -97,13 +100,18 @@ class WBB(Mechanism):
         >>> embs: np.array = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
         >>> mech1.processQuery(embs)
         '''
-        length: int = len(embs)
         candidatesList, distanceValues = self.mappingFunction(embs)
         sampledCandidates = self.samplingFunction(candidatesList, distanceValues)
         finalQuery = []
-        for i in range(length):
-            finalQuery.append(sampledCandidates[i])
 
+        #check if there are words that were considered
+        for i in range(len(self.wordsNotConsidered)):
+            if self.wordsNotConsidered[i] == '_':
+                finalQuery.append(sampledCandidates.pop(0))
+            else:
+                finalQuery.append(self.wordsNotConsidered[i])
+        print(self.wordsNotConsidered)
+        
         return ' '.join(finalQuery)
 
 

@@ -24,7 +24,8 @@ def main() -> None:
 
     #initialization of the mechanisms
     #mech1: Mechanism = Mechanism({'embPath': embPath, 'epsilon': 40})
-    text = 'what is the capitol of france'
+    #important notes: The text should be on lowercase and the words should be separated by a space
+    texts = ['what is the capitol of france', 'who stole the bread', 'how many times does the cat jump on the table']
 
     #---------------------CMP---------------------
     #mech1: CMP = CMP({'embPath': embPath, 'epsilon':4})
@@ -44,9 +45,10 @@ def main() -> None:
     #obfuscatedText = mech1.obfuscateText(text, 1)
     #print(f"Obfuscated text: {obfuscatedText}")
     #---------------------WBB---------------------
-    mech1: WBB = WBB({'embPath': embPath, 'epsilon': 50, 'k': 4, 'n': 50, 'listOfTags': ['NN', 'VB', 'JJ'], 'metricFunction': 'cosine'}) 
-    obfuscatedText = mech1.obfuscateText(text, 1)
-    print(f"Obfuscated text: {obfuscatedText}")
+    mech1: WBB = WBB({'embPath': embPath, 'epsilon': 5, 'k': 4, 'n': 50, 'listOfTags': ['NN', 'VB', 'JJ'], 'metricFunction': 'cosine'}) 
+    for text in texts:
+        obfuscatedText = mech1.obfuscateText(text, 1)
+        print(f"Obfuscated text: {obfuscatedText}")
     
     
 
