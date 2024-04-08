@@ -1,7 +1,7 @@
 # pyPANTERA
 ## Python **P**ackage for n**A**tural la**N**guage obfusca**T**ion **E**nforcing p**R**ivacy & **A**nonymization
 <p align="center">
-    <img src="https://raw.githubusercontent.com/Kekkodf/pypantera/main/images/pyPANTER.webp?token=GHSAT0AAAAAACKHJ56RYA3A4IHIFCG4LMNWZQOWX6Q" width="255">
+    <img src="https://raw.githubusercontent.com/Kekkodf/pypantera/main/images/pyPANTER.webp?token=GHSAT0AAAAAACKHJ56RIW7TCRMUDR5G26UKZQT4W2A" width="255">
 </p>
 
 ## What is pyPANTERA?

@@ -12,6 +12,7 @@ from pypantera.src.mechanism import Mechanism
 from pypantera.src.cmp import CMP
 from pypantera.src.mahalanobis import Mahalanobis
 from pypantera.src.vickrey import VickreyCMP, VickreyMhl
+from pypantera.src.wbb import WBB
 
 def main() -> None:
     t0: time = time.time()
@@ -24,23 +25,31 @@ def main() -> None:
     #initialization of the mechanisms
     #mech1: Mechanism = Mechanism({'embPath': embPath, 'epsilon': 40})
     text = 'what is the capitol of france'
+
+    #---------------------CMP---------------------
     #mech1: CMP = CMP({'embPath': embPath, 'epsilon':4})
     #obfuscatedText = mech1.obfuscateText(text, 1)
     #print(f"Obfuscated text: {obfuscatedText}")
+
+    #---------------------Mahalanobis---------------------
     #mech1: Mahalanobis = Mahalanobis({'embPath': embPath, 'epsilon': 0.1, 'lambda': 1})
     #obfuscatedText = mech1.obfuscateText(text, 1)
     #print(f"Obfuscated text: {obfuscatedText}")
-    mech1: VickreyCMP = VickreyCMP({'embPath': embPath, 'epsilon': 0.1, 't': 0.5})
-    obfuscatedText = mech1.obfuscateText(text, 1)
-    print(f"Obfuscated text: {obfuscatedText}")
 
-    mech1: VickreyMhl = VickreyMhl({'embPath': embPath, 'epsilon': 0.1, 'lambda': 1, 't': 0.5})
+    #---------------------Vickrey---------------------
+    #mech1: VickreyCMP = VickreyCMP({'embPath': embPath, 'epsilon': 0.1, 't': 0.5})
+    #obfuscatedText = mech1.obfuscateText(text, 1)
+    #print(f"Obfuscated text: {obfuscatedText}")
+    #mech1: VickreyMhl = VickreyMhl({'embPath': embPath, 'epsilon': 0.1, 'lambda': 1, 't': 0.5})
+    #obfuscatedText = mech1.obfuscateText(text, 1)
+    #print(f"Obfuscated text: {obfuscatedText}")
+    #---------------------WBB---------------------
+    mech1: WBB = WBB({'embPath': embPath, 'epsilon': 50, 'k': 4, 'n': 50, 'listOfTags': ['NN', 'VB', 'JJ'], 'metricFunction': 'cosine'}) 
     obfuscatedText = mech1.obfuscateText(text, 1)
     print(f"Obfuscated text: {obfuscatedText}")
-    #print(mech1.t)
-    #print(f"Obfuscated text: {obfuscatedText}")
-    #mech1: Vickrey.CMP = Vickrey.CMP({'embPath': embPath, 'epsilon': 0.1, 'lambda': 1, 't': 0.5})
-    #mech2: Vickrey.Mhl = Vickrey.Mhl({'embPath': embPath, 'epsilon': 0.1, 'lambda': 1, 't': 0.5})
+    
+    
+
     #df: pd.DataFrame = pd.DataFrame(columns=['text', 'obfuscatedText'])
     #read the queries from the file
     #df['text'] = queries
