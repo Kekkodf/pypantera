@@ -8,7 +8,6 @@ from typing import List
 class Mahalanobis(Mechanism):
     '''
     BibTeX of Mahalanobis Mechanism, extends CMP mechanism class of the pypanter package:
-
     @inproceedings{xu-etal-2020-differentially,
     title = "A Differentially Private Text Perturbation Method Using Regularized Mahalanobis Metric",
     author = "Xu, Zekun and Aggarwal, Abhinav and Feyisetan, Oluwaseyi and Teissier, Nathanael",
@@ -27,13 +26,10 @@ class Mahalanobis(Mechanism):
     def __init__(self, kwargs: dict) -> None:
         '''
         Initialization of the Mahalanobis Object
-
         : param kwargs: dict the dictionary containing the parameters of the Mechanism Object 
                         + the specific parameters of the Mahalanobis Mechanism (lambda)
-
         Once the Mahalanobis Object is created, the user can use the obfuscateText method to obfuscate 
         the text of the provided text.
-
         The attributes of the Mechanism Object are:
         - vocab: the vocabulary object containing the embeddings
         - embMatrix: the matrix containing the embeddings
@@ -42,7 +38,6 @@ class Mahalanobis(Mechanism):
         - epsilon: the epsilon parameter of the mechanism
         - lam: the lambda parameter of the Mahalanobis mechanism
         - sigma_loc: parameter used for pulling noise in obfuscation
-
         Usage example:
         >>> embPath: str = 'pathToMyEmbeddingsFile.txt'
         >>> eps: float = 0.1 #anyvalue of epsilon must be greater than 0
@@ -52,36 +47,69 @@ class Mahalanobis(Mechanism):
         super().__init__(kwargs)
         assert 'lambda' in kwargs, 'The lambda parameter must be provided'
         assert kwargs['lambda'] >= 0 and kwargs['lambda'] <= 1, 'The lambda parameter must be between 0 and 1'
-        assert 'epsilon' in kwargs, 'The epsilon parameter must be provided'
-        assert kwargs['epsilon'] > 0, 'The epsilon parameter must be greater than 0'
-        self.epsilon: float = kwargs['epsilon']
         self.lam: float = kwargs['lambda']
-        cov_mat = np.cov(self.embMatrix.T, ddof=0) #compute the covariance matrix
-        sigma = cov_mat/ np.mean(np.var(self.embMatrix.T, axis=1)) #compute the sigma matrix
-        self.sigmaLoc: np.array = sqrtm(self.lam * sigma + (1 - self.lam) * np.eye(self.embMatrix.shape[1])) #compute the sigmaLoc matrix   
+        cov_mat = np.cov(self.embMatrix.T, ddof=0)
+        sigma = cov_mat/ np.mean(np.var(self.embMatrix.T, axis=1))
+        self.sigmaLoc = sqrtm(self.lam * sigma + (1 - self.lam) * np.eye(self.embMatrix.shape[1]))      
 
     def pullNoise(self) -> np.array:
         '''
         method pullNoise: this method is used to pull noise accordingly 
         to the definition of the Mahalanobis mechanism, see BibTeX ref
-
         : return: np.array the noise pulled
-
         Usage example:
         (Considering that the Mechanism Object mech1 has been created 
         as in the example of the __init__ method)
         >>> mech1.pullNoise()
         '''
-        N: np.array = npr.multivariate_normal(
+        N = npr.multivariate_normal(
             np.zeros(self.embMatrix.shape[1]), 
             np.eye(self.embMatrix.shape[1])
-            ) #pull noise from a multivariate normal distribution
-        X: np.array = N / np.sqrt(np.sum(N ** 2)) #normalize the noise
-        X: np.array = np.dot(self.sigmaLoc, X) #apply the sigmaLoc matrix to the noise
-        X: np.array = X / np.sqrt(np.sum(X ** 2)) #normalize the noise
-        Y: np.array = npr.gamma(
+            )
+        X = N / np.sqrt(np.sum(N ** 2))
+        X = np.dot(self.sigmaLoc, X)
+        X = X / np.sqrt(np.sum(X ** 2))
+        Y = npr.gamma(
             self.embMatrix.shape[1], 
             1 / self.epsilon
-            ) #pull gamma noise
-        Z: np.array = Y * X #compute the final noise
+            )
+        Z = Y * X
         return Z
+
+    def obfuscateText(self, data: str, numberOfCores: int) -> List[str]:
+        '''
+        method obfuscateText: this method is used to obfuscate the text of the provided text 
+        using the Mahalanobis mechanism
+        : param data: str the text to obfuscate
+        : param numberOfCores: int the number of cores to use for the obfuscation
+        : return: str the obfuscated text
+        '''
+        words = data.split() #split query into words
+        results = []
+        with mp.Pool(numberOfCores) as p:
+            tasks = [self.noisyEmb(words) for i in range(numberOfCores)]
+            results.append(p.map(self.processQuery, tasks))
+        results = [item for sublist in results for item in sublist]
+        return results
+
+    def noisyEmb(self, words: List[str]) -> np.array:
+        embs = []
+        for word in words:
+            if word not in self.vocab.embeddings:
+                embs.append(
+                    np.zeros(self.embMatrix.shape[1]) + npr.normal(0, 1, self.embMatrix.shape[1]) #handle OoV words
+                    + self.pullNoise()
+                    )
+            else:
+                embs.append(self.vocab.embeddings[word] + self.pullNoise())
+        return np.array(embs)
+
+    def processQuery(self, 
+                     embs: np.array) -> str:
+        length = len(embs)
+        distance = self.euclideanDistance(embs, self.embMatrix)
+        closest = np.argpartition(distance, 1, axis=1)[:, :1]
+        finalQuery = []
+        for i in range(length):
+            finalQuery.append(list(self.vocab.embeddings.keys())[closest[i][0]])
+        return ' '.join(finalQuery)

@@ -19,6 +19,9 @@ class Mechanism():
             word: i 
             for i, word in enumerate(self.vocab.embeddings.keys())
             } #create the word to index mapping
+        assert 'epsilon' in kwargs, 'The epsilon parameter must be provided'
+        assert kwargs['epsilon'] > 0, 'The epsilon parameter must be greater than 0'
+        self.epsilon: float = kwargs['epsilon'] #set the epsilon parameter
         
     def pullNoise(self) -> np.array:
         '''
@@ -58,9 +61,7 @@ class Mechanism():
         >>> numberOfCores: int = 4
         >>> mech1.obfuscateText(data, numberOfCores)
         '''
-        words: List[str] = data.split() #split query into words
-        results: List = self.multiCoreObfuscateText(words, numberOfCores) #flatten the results
-        return results
+        return None
                                  
     def noisyEmb(self, words: List[str]) -> np.array: 
         '''
@@ -75,16 +76,7 @@ class Mechanism():
         >>> words: List[str] = ['word1', 'word2', 'word3']
         >>> mech1.noisyEmb(words)
         '''
-        embs: List[np.array] = []
-        for word in words:
-            if word not in self.vocab.embeddings:
-                embs.append(
-                    np.zeros(self.embMatrix.shape[1]) + npr.normal(0, 1, self.embMatrix.shape[1]) #handle OoV words
-                    + self.pullNoise()
-                    )
-            else:
-                embs.append(self.vocab.embeddings[word] + self.pullNoise())
-        return np.array(embs)
+        return None
 
     def processQuery(self, 
                      embs: np.array) -> str:
@@ -103,13 +95,7 @@ class Mechanism():
         >>> mech1.processQuery(embs)
         '''
 
-        length: int = len(embs)
-        distance: np.array = self.euclideanDistance(embs, self.embMatrix)
-        closest: np.array = np.argpartition(distance, 1, axis=1)[:, :1]
-        finalQuery: List[str] = []
-        for i in range(length):
-            finalQuery.append(list(self.vocab.embeddings.keys())[closest[i][0]])
-        return ' '.join(finalQuery)
+        return None
     
     @staticmethod
     def euclideanDistance(x: np.array, 
@@ -134,7 +120,6 @@ class Mechanism():
         y_expanded: np.array = y[np.newaxis, :, :]
         return np.sqrt(np.sum((x_expanded - y_expanded) ** 2, axis=2))
     
-    @staticmethod
     def multiCoreObfuscateText(self, words: List[str],
                                numberOfCores: int) -> List[str]:
         '''
