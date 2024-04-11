@@ -33,7 +33,7 @@ class CMP(Mechanism):
     }
     '''
     
-    def __init__(self, kwargs: dict) -> None:
+    def __init__(self, kwargs: dict[str:object]) -> None:
 
         '''
         Initialization of the Mechanism Object

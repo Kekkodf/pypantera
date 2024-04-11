@@ -23,7 +23,7 @@ class TEM(Mechanism):
     bibsource    = {dblp computer science bibliography, https://dblp.org}
     }
     '''
-    def __init__(self, kwargs: dict) -> None:
+    def __init__(self, kwargs: dict[str:object]) -> None:
         '''
         Initialization of the TEM Object
 

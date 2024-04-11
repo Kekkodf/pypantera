@@ -23,7 +23,7 @@ class CusText(Mechanism):
     pages = {5747--5758},
     }    
     '''
-    def __init__(self, kwargs: dict) -> None:
+    def __init__(self, kwargs: dict[str:object]) -> None:
         '''
         Initialization of the CusText Object
 

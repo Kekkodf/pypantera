@@ -14,7 +14,7 @@ class WBB(Mechanism):
     TBP (To Be Published)
     
     '''
-    def __init__(self, kwargs: dict) -> None:
+    def __init__(self, kwargs: dict[str:object]) -> None:
         '''
         Initialization of the WBB Object
 

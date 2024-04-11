@@ -10,7 +10,7 @@ class Mechanism():
     '''
     Abstract class Mechanism: this class is used to define the abstract class of the mechanism
     '''
-    def __init__(self, kwargs) -> None:
+    def __init__(self, kwargs: dict[str:object]) -> None:
         self.vocab: Vocab = Vocab(kwargs['embPath']) #load the vocabulary
         self.embMatrix: np.array = np.array(
             list(self.vocab.embeddings.values())

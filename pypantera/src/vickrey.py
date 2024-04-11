@@ -10,7 +10,7 @@ class Vickrey(Mechanism):
     '''
     Vickrey Mechanism
     '''
-    def __init__(self, kwargs) -> None:
+    def __init__(self, kwargs: dict[str:object]) -> None:
         '''
         BibTeX of Vickrey Mechanism, extends Mechanism class of the pypanter package:
 
