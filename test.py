@@ -13,6 +13,9 @@ from pypantera.src.cmp import CMP
 from pypantera.src.mahalanobis import Mahalanobis
 from pypantera.src.vickrey import VickreyCMP, VickreyMhl
 from pypantera.src.wbb import WBB
+from pypantera.src.custext import CusText
+#from pypantera.src.santext import SanText
+#from pypantera.src.tem import TEM
 
 def main() -> None:
     t0: time = time.time()
@@ -45,9 +48,10 @@ def main() -> None:
     #obfuscatedText = mech1.obfuscateText(text, 1)
     #print(f"Obfuscated text: {obfuscatedText}")
     #---------------------WBB---------------------
-    mech1: WBB = WBB({'embPath': embPath, 'epsilon': 5, 'k': 4, 'n': 50, 'listOfTags': ['NN', 'VB', 'JJ'], 'metricFunction': 'cosine'}) 
+    mech1: CusText = CusText({'embPath': embPath, 'epsilon': 5, 'k': 4}) 
     for text in texts:
-        obfuscatedText = mech1.obfuscateText(text, 1)
+        text = text.lower().split()
+        obfuscatedText = mech1.tokenMappingGeneration(text)
         print(f"Obfuscated text: {obfuscatedText}")
     
     
