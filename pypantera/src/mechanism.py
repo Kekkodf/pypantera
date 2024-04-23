@@ -1,6 +1,7 @@
 from .utils.vocab import Vocab
 
 import numpy as np
+import pandas as pd
 import os
 from typing import List
 import numpy.random as npr
@@ -40,7 +41,6 @@ class Mechanism():
         >>> words: List[str] = ['what', 'is', 'the', 'capitol', 'of', 'france']
         >>> mech1.noisyEmb(words)
         '''
-
         embs: List = []
         for word in words:
             if word not in self.vocab.embeddings:
@@ -52,7 +52,7 @@ class Mechanism():
                 embs.append(self.vocab.embeddings[word] + self.pullNoise())
         return np.array(embs)
     
-    def obfuscateText(self, data: str, numberOfCores: int) -> List[str]:
+    def obfuscateText(self, data:pd.DataFrame, numberOfTimes: int) -> List[str]:
         '''
         method obfuscateText: this method is used to obfuscate the text of the provided text 
         using the Mahalanobis mechanism
@@ -69,13 +69,17 @@ class Mechanism():
         >>> mech1.obfuscateText(text, 1)
         '''
 
-        words = data.split() #split query into words
-        results: List = []
-        with mp.Pool(numberOfCores) as p:
-            tasks = [self.noisyEmb(words) for i in range(numberOfCores)]
-            results.append(p.map(self.processQuery, tasks))
-        results = [item for sublist in results for item in sublist]
-        return results
+        
+        #rename the columns
+        data.columns = ['id', 'text']
+        #tokenize the text column
+        data['text'] = data['text'].apply(lambda x: x.lower().split())
+        df = pd.DataFrame(columns=['id', 'text', 'obfuscatedText'])
+        #obfuscate the text column
+        obfuscatedText = pd.concat([data['text'].apply(lambda x: self.processQuery(self.noisyEmb(x))) for _ in range(numberOfTimes)], axis=1)
+        df = pd.concat([data, pd.DataFrame({'obfuscatedText': obfuscatedText.values.tolist()})], axis=1)
+        df['text'] = df['text'].apply(lambda x: ' '.join(x))
+        return df
     
     @staticmethod
     def euclideanDistance(x: np.array, 
