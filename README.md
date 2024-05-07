@@ -29,10 +29,14 @@ import pypantera
 Test package for natural language obfuscation.
 
 ```python
-from pypantera import panteraTest
 
-panteraTest()
 ```
+
+## Why use pyPANTERA?
+
+pyPANTERA is designed to help Data Scientists and Researchers to protect the privacy of their data by obfuscating sensitive texts. It can be used to obfuscate sensitive natural language texts by implemneting current state of the art techniques of text obfuscation based o Differential Privacy and Word Embeddings.
+
+
 
 
 
