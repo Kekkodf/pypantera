@@ -8,9 +8,14 @@ from pypantera.src.cmp import CMP
 from pypantera.src.mahalanobis import Mahalanobis
 from pypantera.src.vickrey import VickreyCMP, VickreyMhl
 from pypantera.src.custext import CusText
+from pypantera.src.tem import TEM
 
 
 def createLogger() -> object:
+    '''
+    creates the logger object and returns it
+    Runtime logs can be found in the pypantera/logs/logger.log file
+    '''
     if os.path.exists('./pypantera/logs/logger.log'):
         os.remove('./pypantera/logs/logger.log')
     else:
@@ -24,16 +29,26 @@ def createLogger() -> object:
     return logger
 
 def selectMechanism(args:object, logger:object) -> list:
+    '''
+    select the mechanism to use based on the argument.mechanism provided, initialize a list of mechanisms for different parameters
+    '''
     if args.mechanism == 'CMP':
         mechanisms = [CMP({'embPath': args.embPath, 'epsilon': e}) for e in args.epsilons]
     elif args.mechanism == 'Mahalanobis':
-        mechanisms = [Mahalanobis({'embPath': args.embPath, 'epsilon': e, 'lambda': 1}) for e in args.epsilons]
+        mechanisms = [Mahalanobis({'embPath': args.embPath, 'epsilon': e, 'lambda': args.lam}) for e in args.epsilons]
+        logger.info(f"Lambda: {mechanisms[0].lam}")
     elif args.mechanism == 'VickreyCMP':
-        mechanisms = [VickreyCMP({'embPath': args.embPath, 'epsilon': e, 't':0.75}) for e in args.epsilons]
+        mechanisms = [VickreyCMP({'embPath': args.embPath, 'epsilon': e, 't':args.t}) for e in args.epsilons]
+        logger.info(f"Treshold: {mechanisms[0].t}")
     elif args.mechanism == 'VickreyMhl':
-        mechanisms = [VickreyMhl({'embPath': args.embPath, 'epsilon': e, 'lambda': 1, 't': 0.75}) for e in args.epsilons]
+        mechanisms = [VickreyMhl({'embPath': args.embPath, 'epsilon': e, 'lambda': args.lam, 't': args.lam}) for e in args.epsilons]
+        logger.info(f"Lambda: {mechanisms[0].lam}")
+        logger.info(f"Treshold: {mechanisms[0].t}")
     elif args.mechanism == 'CusText':
         mechanisms = [CusText({'embPath': args.embPath, 'epsilon': e}) for e in args.epsilons]
+    elif args.mechanism == 'TEM':
+        mechanisms = [TEM({'embPath': args.embPath, 'epsilon': e, 'beta': args.beta}) for e in args.epsilons]
+        logger.info(f"Beta: {mechanisms[0].beta} --> Gamma: {mechanisms[0].gamma}")
     else:
         logger.error('The mechanism provided is not valid. Please choose one of the following mechanisms: CMP, Mahalanobis, VickreyCMP, VickreyMhl, CusText')
         exit(1)
@@ -41,6 +56,9 @@ def selectMechanism(args:object, logger:object) -> list:
     return mechanisms
 
 def saveResults(results:List[pd.DataFrame], mechanisms:List[Mechanism], args:object, logger:object) -> None:
+    '''
+    Save results to a csv file in the results/args.task folder
+    '''
     for i, df in enumerate(results):
         df:pd.DataFrame = df.explode('obfuscatedText')
         df['mechanism'] = mechanisms[i].__class__.__name__

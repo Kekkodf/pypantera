@@ -21,10 +21,13 @@ if __name__ == '__main__':
 
     #define the arguments parser
     parser:object = argparse.ArgumentParser(description='Obfuscate texts using different mechanisms')
-    parser.add_argument('--task', '-t', type=str, help='The task to perform', default='retrieval')
+    parser.add_argument('--task', type=str, help='The task to perform', default='retrieval')
     parser.add_argument('--embPath', '-eP', type=str, help='The path to the embeddings file', default='/ssd2/data/defaverifr/DATA/embeddings/glove/glove.6B.300d.txt')
     parser.add_argument('--inputPath', '-i', type=str, help='The path to the input file', default='/ssd2/data/defaverifr/DATA/queries/msmarco/trec-dl-19.csv')
     parser.add_argument('--mechanism', '-m', type=str, help='The mechanism to use', default='Mahalanobis')
+    parser.add_argument('--treshold', '-t', type=float, help='The treshold value to use Vickrey mechanisms', default=0.75)
+    parser.add_argument('--beta', '-b', type=float, help='The beta value to use for the TEM mechanism', default=0.001)
+    parser.add_argument('--lambda', '-lam', type=float, help='The lambda value to use for the Mahalanobis and Vickrey mechanisms', default=1)
     parser.add_argument('--epsilons','-e', type=float, help='The list of epsilon values to use', nargs='+', default=[1, 5, 10, 12.5, 15, 17.5, 20, 50])
     parser.add_argument('--numberOfObfuscations', '-n', type=int, help='The number of obfuscations to perform', default=5)
     args:object = parser.parse_args()
@@ -39,7 +42,7 @@ if __name__ == '__main__':
     #initialize the mechanisms
     mechanisms:List[Mechanism] = selectMechanism(args, logger)
     logger.info('Starting the obfuscation process...')
-
+    
     #define iterable
     data:pd.DataFrame = pd.read_csv(args.inputPath, sep = ',')
 
