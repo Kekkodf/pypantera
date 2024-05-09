@@ -1,11 +1,11 @@
-from .mechanism import Mechanism
+from .AbstractEmbeddingPerturbationMechanism import AbstractEmbeddingPerturbationMechanism
 from .cmp import CMP
 from .mahalanobis import Mahalanobis
 import numpy as np
 import numpy.random as npr
 from typing import List
 
-class Vickrey(Mechanism):
+class Vickrey(AbstractEmbeddingPerturbationMechanism):
     
     '''
     Vickrey Mechanism
@@ -51,6 +51,7 @@ class VickreyCMP(CMP, Vickrey):
             >>> mech1 = Vickrey.Mhl({'embPath': embPath, 'epsilon': eps, 't': t})
             '''
             super().__init__(kwargs)
+            self.name:str = 'VickreyCMP'
 
     def processQuery(self, 
                  embs: np.array) -> str:
@@ -86,10 +87,16 @@ class VickreyCMP(CMP, Vickrey):
         noisyEmbeddings: np.array = self.embMatrix[closest[np.arange(length), vickreyChoice]] #get the noisy embeddings
 
         finalQuery: List[str] = []
-        for e in noisyEmbeddings:
-            index = np.where(self.embMatrix == e)
-            finalQuery.append(self.index2word[index[0][0]])
+        distances:np.array = self.euclideanDistance(noisyEmbeddings, self.embMatrix)
+        found:np.array = np.argpartition(distances, 1, axis=1)[:, :1]
+        for f in found:
+            finalQuery.append(self.index2word[f[0]])
         return ' '.join(finalQuery)
+        #for e in noisyEmbeddings:
+        #    index = np.where(self.embMatrix == e)
+        #    finalQuery.append(self.index2word[index[0][0]])
+        #return ' '.join(finalQuery)
+        ...
     
 class VickreyMhl(Mahalanobis, Vickrey):
     def __init__(self, kwargs) -> None:
@@ -119,6 +126,7 @@ class VickreyMhl(Mahalanobis, Vickrey):
         >>> mech1 = Vickrey.Mhl({'embPath': embPath, 'epsilon': eps, 'lambda': lam, 't': t})
         '''
         super().__init__(kwargs)
+        self.name:str = 'VickreyMhl'
 
     def processQuery(self, 
                  embs: np.array) -> str:
@@ -154,8 +162,9 @@ class VickreyMhl(Mahalanobis, Vickrey):
         noisyEmbeddings: np.array = self.embMatrix[closest[np.arange(length), vickreyChoice]] #get the noisy embeddings
         
         finalQuery: List[str] = []
-        for e in noisyEmbeddings:
-            index = np.where(self.embMatrix == e)
-            finalQuery.append(self.index2word[index[0][0]])
+        distances:np.array = self.euclideanDistance(noisyEmbeddings, self.embMatrix)
+        found:np.array = np.argpartition(distances, 1, axis=1)[:, :1]
+        for f in found:
+            finalQuery.append(self.index2word[f[0]])
         return ' '.join(finalQuery)
         

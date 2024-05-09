@@ -1,15 +1,14 @@
-from .mechanism import Mechanism
+from .AbstractEmbeddingPerturbationMechanism import AbstractEmbeddingPerturbationMechanism
 import numpy as np
 import numpy.random as npr
 from scipy.linalg import sqrtm
-import multiprocessing as mp
 from typing import List
 
 '''
 Mahalanobis Mechanism
 '''
 
-class Mahalanobis(Mechanism):
+class Mahalanobis(AbstractEmbeddingPerturbationMechanism):
     '''
     BibTeX of Mahalanobis Mechanism, extends Mechanism mechanism class of the pypantera package:
 
@@ -56,12 +55,13 @@ class Mahalanobis(Mechanism):
         '''
 
         super().__init__(kwargs)
-        assert 'lambda' in kwargs, 'The lambda parameter must be provided'
-        assert kwargs['lambda'] >= 0 and kwargs['lambda'] <= 1, 'The lambda parameter must be between 0 and 1'
-        self.lam: float = kwargs['lambda']
+        assert 'lam' in kwargs, 'The lambda parameter must be provided'
+        assert kwargs['lam'] >= 0 and kwargs['lam'] <= 1, 'The lambda parameter must be between 0 and 1'
+        self.lam: float = kwargs['lam']
         cov_mat = np.cov(self.embMatrix.T, ddof=0)
         sigma = cov_mat/ np.mean(np.var(self.embMatrix.T, axis=1))
-        self._sigmaLoc = sqrtm(self.lam * sigma + (1 - self.lam) * np.eye(self.embMatrix.shape[1]))      
+        self._sigmaLoc = sqrtm(self.lam * sigma + (1 - self.lam) * np.eye(self.embMatrix.shape[1]))   
+        self.name:str = 'Mahalanobis'   
 
     def pullNoise(self) -> np.array:
         '''

@@ -1,16 +1,13 @@
 import numpy as np
 import numpy.random as npr
-import multiprocessing as mp
-from .utils.vocab import Vocab
-from .mechanism import Mechanism
-import os
+from .AbstractEmbeddingPerturbationMechanism import AbstractEmbeddingPerturbationMechanism
 from typing import List
 
 '''
 CMP Mechanism
 '''
 
-class CMP(Mechanism):
+class CMP(AbstractEmbeddingPerturbationMechanism):
     '''
     BibTeX of CMP Mechanism, extends Mechanism mechanism class of the pypantera package:
 
@@ -57,9 +54,7 @@ class CMP(Mechanism):
         '''
 
         super().__init__(kwargs)
-        assert 'epsilon' in kwargs, 'The epsilon parameter must be provided'
-        assert kwargs['epsilon'] > 0, 'The epsilon parameter must be greater than 0'
-        self.epsilon: float = kwargs['epsilon']
+        
 
     def pullNoise(self) -> np.array:
         '''
@@ -101,7 +96,6 @@ class CMP(Mechanism):
         >>> embs: np.array = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
         >>> mech1.processQuery(embs)
         '''
-
         length: int = len(embs)
         distance: np.array = self.euclideanDistance(embs, self.embMatrix)
         closest: np.array = np.argpartition(distance, 1, axis=1)[:, :1]

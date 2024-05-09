@@ -1,11 +1,12 @@
-from .mechanism import Mechanism
+from .AbstractSamplingPerturbationMechanism import AbstractSamplingPerturbationMechanism
 import numpy as np
 import numpy.random as npr
 from scipy.linalg import sqrtm
 import multiprocessing as mp
 from typing import List
+import time
 
-class SanText(Mechanism):
+class SanText(AbstractSamplingPerturbationMechanism):
     '''
     BibTeX of SanText Mechanism, extends CMP mechanism class of the pypanter package:
 
@@ -41,3 +42,4 @@ class SanText(Mechanism):
         >>> mech1 = SanText({'embPath': embPath, 'epsilon': eps, })
         '''
         super().__init__(kwargs)
+        self.name:str = 'SanText'

@@ -1,11 +1,12 @@
-from .mechanism import Mechanism
+from .AbstractSamplingPerturbationMechanism import AbstractSamplingPerturbationMechanism
 import numpy as np
 import numpy.random as npr
 from scipy.linalg import sqrtm
 import multiprocessing as mp
 from typing import List
+import time
 
-class CusText(Mechanism):
+class CusText(AbstractSamplingPerturbationMechanism):
     '''
     BibTeX of CusText Mechanism, extends CMP mechanism class of the pypanter package:
 
@@ -44,13 +45,14 @@ class CusText(Mechanism):
         Usage example:
         >>> embPath: str = 'pathToMyEmbeddingsFile.txt'
         >>> eps: float = 0.1 #anyvalue of epsilon must be greater than 0
-        >>> lam: float = 0.1 #anyvalue of lambda must be between 0 and 1
+        >>> k: int = 5 #any integer greater than 0 
         >>> mech1 = CusText({'embPath': embPath, 'epsilon': eps, })
         '''
         super().__init__(kwargs)
-        assert 'k' in kwargs, 'The parameter k must be provided'
-        assert kwargs['k'] > 0, 'The parameter k must be greater than 0'
-        self.k = kwargs['k']
+        assert 'k' in kwargs, 'The k parameter must be provided'
+        assert kwargs['k'] > 0, 'The k parameter must be greater than 0'
+        self.k: int = kwargs['k']
+        self.name:str = 'CusText'
 
     def mappingFunction(self):
         '''

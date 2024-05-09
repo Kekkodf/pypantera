@@ -1,12 +1,11 @@
-from .mechanism import Mechanism
+from .AbstractSamplingPerturbationMechanism import AbstractSamplingPerturbationMechanism
 import numpy as np
 import numpy.random as npr
 from scipy.linalg import sqrtm
 import multiprocessing as mp
 from typing import List
-import time
 
-class TEM(Mechanism):
+class TEM(AbstractSamplingPerturbationMechanism):
     '''
     BibTeX of TEM Mechanism, extends CMP mechanism class of the pypanter package:
 
@@ -53,6 +52,7 @@ class TEM(Mechanism):
         assert kwargs['beta'] > 0 and kwargs['beta'] < 1, 'The beta parameter must be between 0 and 1'
         self.beta: float = kwargs['beta'] 
         self.gamma: float = (2/self.epsilon)*np.log(((1-self.beta)*(len(self.embMatrix)-1))/self.beta)
+        self.name:str = 'TEM'
 
         self.candidates: dict = {}
         #self._internalPreprocessing()

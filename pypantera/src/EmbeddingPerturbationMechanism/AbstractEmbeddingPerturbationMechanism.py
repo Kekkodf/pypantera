@@ -1,32 +1,20 @@
-from .utils.vocab import Vocab
+from ..AbstractTextObfuscationDPMechanism import AbstractTextObfuscationDPMechanism
 
 import numpy as np
 import pandas as pd
-import os
 from typing import List
 import numpy.random as npr
-import multiprocessing as mp
 
-class Mechanism():
+class AbstractEmbeddingPerturbationMechanism(AbstractTextObfuscationDPMechanism):
     '''
-    Abstract class Mechanism: this class is used to define the abstract class of the mechanism
+    Abstract class scramblingEmbeddingsMechanism: this class is used to define the abstract class of the scrambling Embeddings mechanisms
     '''
+    
     def __init__(self, kwargs: dict[str:object]) -> None:
-        self.vocab: Vocab = Vocab(kwargs['embPath']) #load the vocabulary
-        self.embMatrix: np.array = np.array(
-            list(self.vocab.embeddings.values())
-            ) #load the embeddings matrix
-        self.index2word: dict = {
-            i: word 
-            for i, word in enumerate(self.vocab.embeddings.keys())
-            } #create the index to word mapping
-        self.word2index: dict = {
-            word: i 
-            for i, word in enumerate(self.vocab.embeddings.keys())
-            } #create the word to index mapping
-        assert 'epsilon' in kwargs, 'The epsilon parameter must be provided'
-        assert kwargs['epsilon'] > 0, 'The epsilon parameter must be greater than 0'
-        self.epsilon: float = kwargs['epsilon'] #set the epsilon parameter
+        '''
+        Constructur of the scramblingEmbeddingsMechanism class
+        '''
+        super().__init__(kwargs)
     
     def noisyEmb(self, words: List[str]) -> np.array:
         '''
@@ -68,8 +56,6 @@ class Mechanism():
         >>> text: str = 'what is the capitol of france'
         >>> mech1.obfuscateText(text, 1)
         '''
-
-        
         #rename the columns
         data.columns = ['id', 'text']
         #tokenize the text column
