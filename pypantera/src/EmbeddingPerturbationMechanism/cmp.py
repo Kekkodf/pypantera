@@ -4,11 +4,13 @@ from .AbstractEmbeddingPerturbationMechanism import AbstractEmbeddingPerturbatio
 from typing import List
 
 '''
-CMP Mechanism
+# CMP Mechanism
 '''
 
 class CMP(AbstractEmbeddingPerturbationMechanism):
     '''
+    # CMP
+    
     BibTeX of CMP Mechanism, extends Mechanism mechanism class of the pypantera package:
 
     @inproceedings{FeyisetanEtAl2020CMP,

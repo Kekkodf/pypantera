@@ -5,9 +5,16 @@ from scipy.linalg import sqrtm
 import multiprocessing as mp
 from typing import List
 import time
+from collections import defaultdict
+
+'''
+# CusText Mechanism
+'''
 
 class CusText(AbstractSamplingPerturbationMechanism):
     '''
+    # CusText
+
     BibTeX of CusText Mechanism, extends CMP mechanism class of the pypanter package:
 
     @inproceedings{ChenEtAl2023Customized,
@@ -53,54 +60,33 @@ class CusText(AbstractSamplingPerturbationMechanism):
         assert kwargs['k'] > 0, 'The k parameter must be greater than 0'
         self.k: int = kwargs['k']
         self.name:str = 'CusText'
+        self._simWordDict, self._pDict = self._getCustomizedMapping()
 
-    def mappingFunction(self):
+    def _getCustomizedMapping(self):
+        wordHash:defaultdict = defaultdict(str)
+        simWordDict:defaultdict = defaultdict(list)
+        pDict:defaultdict = defaultdict(list)
+        wordFreq = self.vocab.embeddings.keys()
+        for i in range(len(wordFreq)):
+            word = wordFreq[i]
+            if word not in wordHash:
+                indexList = self.euclideanDistance(self.vocab.embeddings[word], self.embMatrix).argsort()[:self.k]
+                wordList = [self._index2word[index] for index in indexList]
+                embeddingList = np.array([self.vocab.embeddings[w] for w in wordList])
+                
+
+
+    def processText(self,text:List[str])->str:
         '''
-        mappingFunction of the CusText Mechanism
+        method selfProcessQueryText: this method is used to process the Text and return the obfuscated Text
 
-        : param text: List[str] the list of words of the text to be obfuscated
-
-        : return: List[str] the list of tokens to map the words of the text
-
-        Usage example:
-        >>> text = ['I', 'love', 'privacy']
-        >>> mech1.tokenMappingGeneration(text)
+        : param embs: np.array the embeddings of the words
+        : return: str the obfuscated Text
         '''
-        X:List[str] = list(self.vocab.embeddings.keys())
+        ...
+        
 
-        Y:List[str] = X
 
-        f_map:dict[str:dict[str:np.array]] = {}
-
-        Y_prime:List[str] = []
-        while len(X) < self.k:
-            #select a random word x from X
-            x:str = X.pop(npr.randint(0, len(X)))
-            #add x to Y_prime
-            Y_prime.append(x)
-            #get embeddings vectors for all y in Y
-            y_embs:np.array = np.array([self.vocab.embeddings[y] for y in Y])
-            #get the embeddings vectors for x
-            x_emb:np.array = self.vocab.embeddings[x]
-            #compute the euclidean distance between the embeddings of x and y
-            distances:np.array = self.euclideanDistance(x_emb, y_embs)
-            #sort the distances
-            sorted_distances:np.array = np.argsort(distances)
-            #select the k closest words to x
-            k_closest = sorted_distances[:self.k]
-            #define a dict where the key is the word x and the value is a dict with keys the words and values the distances
-            f_map[x] = {Y[i]: distances[i] for i in k_closest}
-            #update X as X\Y_prime, Y as Y\Y_prime and self.k as self.k = len(X)
-            X = [word for word in X if word not in Y_prime]
-            Y = [word for word in Y if word not in Y_prime]
-            self.k = len(X)
-        return f_map
-    
-    def samplingFunction():
-        raise NotImplementedError
-    
-    def obfuscateText(self, data: str, numberOfCores: int) -> List[str]:
-        raise NotImplementedError
 
             
 

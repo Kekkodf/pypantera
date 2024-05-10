@@ -5,11 +5,13 @@ from scipy.linalg import sqrtm
 from typing import List
 
 '''
-Mahalanobis Mechanism
+# Mahalanobis Mechanism
 '''
 
 class Mahalanobis(AbstractEmbeddingPerturbationMechanism):
     '''
+    # Mahalanobis
+    
     BibTeX of Mahalanobis Mechanism, extends Mechanism mechanism class of the pypantera package:
 
     @inproceedings{xu-etal-2020-differentially,

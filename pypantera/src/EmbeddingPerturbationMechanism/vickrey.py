@@ -5,13 +5,14 @@ import numpy as np
 import numpy.random as npr
 from typing import List
 
-class Vickrey(AbstractEmbeddingPerturbationMechanism):
+class AbstractVickrey(AbstractEmbeddingPerturbationMechanism):
     
     '''
     Vickrey Mechanism
     '''
     def __init__(self, kwargs: dict[str:object]) -> None:
         '''
+        # Vickrey
         BibTeX of Vickrey Mechanism, extends Mechanism class of the pypanter package:
 
         @article{Xu2021OnAU,
@@ -28,7 +29,7 @@ class Vickrey(AbstractEmbeddingPerturbationMechanism):
         assert kwargs['t'] >= 0 and kwargs['t'] <= 1, 'The t parameter must be between 0 and 1'
         self.t: float = kwargs['t']
 
-class VickreyCMP(CMP, Vickrey):
+class VickreyCMP(CMP, AbstractVickrey):
     def __init__(self, kwargs) -> None:
            
             '''
@@ -93,7 +94,7 @@ class VickreyCMP(CMP, Vickrey):
         return ' '.join(finalText)
         
     
-class VickreyMhl(Mahalanobis, Vickrey):
+class VickreyMhl(Mahalanobis, AbstractVickrey):
     def __init__(self, kwargs) -> None:
         '''
         Initialization of the VickreyMahalanobis Object 
