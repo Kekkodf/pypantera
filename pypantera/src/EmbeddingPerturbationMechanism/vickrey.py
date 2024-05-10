@@ -53,14 +53,14 @@ class VickreyCMP(CMP, Vickrey):
             super().__init__(kwargs)
             self.name:str = 'VickreyCMP'
 
-    def processQuery(self, 
+    def processText(self, 
                  embs: np.array) -> str:
         '''
-        method processQuery: this method is used to process the query accordingly
+        method processText: this method is used to process the Text accordingly
         to the definition of the Vickrey mechanism, see BibTeX ref
 
-        : param embs: np.array the embeddings of the query
-        : return: str the obfuscated query
+        : param embs: np.array the embeddings of the Text
+        : return: str the obfuscated Text
 
         Usage example:
         (Considering that the Mechanism Object mech1 has been created
@@ -71,9 +71,9 @@ class VickreyCMP(CMP, Vickrey):
         >>> t: float = 0.5
 
         >>> mech1 = Vickrey.Mhl({'embPath': embPath, 'epsilon': eps, 'lambda': lam, 't': t})
-        >>> query: str = 'what is the capitol of france'
-        >>> embs: np.array = mech1.getEmbeddings(query)
-        >>> obfuscatedQuery: str = mech1.processQuery(embs)
+        >>> Text: str = 'what is the capitol of france'
+        >>> embs: np.array = mech1.getEmbeddings(Text)
+        >>> obfuscatedText: str = mech1.processText(embs)
         '''
 
         length: int = len(embs) #compute number of words
@@ -86,17 +86,12 @@ class VickreyCMP(CMP, Vickrey):
         vickreyChoice: np.array = np.array([npr.choice(2, p=[p[w], 1-p[w]]) for w in range(length)]) #choose the closest embedding according to the probabilities
         noisyEmbeddings: np.array = self.embMatrix[closest[np.arange(length), vickreyChoice]] #get the noisy embeddings
 
-        finalQuery: List[str] = []
-        distances:np.array = self.euclideanDistance(noisyEmbeddings, self.embMatrix)
-        found:np.array = np.argpartition(distances, 1, axis=1)[:, :1]
-        for f in found:
-            finalQuery.append(self.index2word[f[0]])
-        return ' '.join(finalQuery)
-        #for e in noisyEmbeddings:
-        #    index = np.where(self.embMatrix == e)
-        #    finalQuery.append(self.index2word[index[0][0]])
-        #return ' '.join(finalQuery)
-        ...
+        distance = self.euclideanDistance(noisyEmbeddings, self.embMatrix)
+        found = np.argpartition(distance, 1, axis=1)[:, :1]
+        
+        finalText = self.indexes2words(found)       
+        return ' '.join(finalText)
+        
     
 class VickreyMhl(Mahalanobis, Vickrey):
     def __init__(self, kwargs) -> None:
@@ -128,14 +123,14 @@ class VickreyMhl(Mahalanobis, Vickrey):
         super().__init__(kwargs)
         self.name:str = 'VickreyMhl'
 
-    def processQuery(self, 
+    def processText(self, 
                  embs: np.array) -> str:
         '''
-        method processQuery: this method is used to process the query accordingly
+        method processText: this method is used to process the Text accordingly
         to the definition of the Vickrey mechanism, see BibTeX ref
 
-        : param embs: np.array the embeddings of the query
-        : return: str the obfuscated query
+        : param embs: np.array the embeddings of the Text
+        : return: str the obfuscated Text
 
         Usage example:
         (Considering that the Mechanism Object mech1 has been created
@@ -146,9 +141,9 @@ class VickreyMhl(Mahalanobis, Vickrey):
         >>> t: float = 0.5
 
         >>> mech1 = Vickrey.Mhl({'embPath': embPath, 'epsilon': eps, 'lambda': lam, 't': t})
-        >>> query: str = 'what is the capitol of france'
-        >>> embs: np.array = mech1.getEmbeddings(query)
-        >>> obfuscatedQuery: str = mech1.processQuery(embs)
+        >>> text: str = 'what is the capitol of france'
+        >>> embs: np.array = mech1.getEmbeddings(text)
+        >>> obfuscatedText: str = mech1.processText(embs)
         '''
 
         length: int = len(embs) #compute number of words
@@ -161,10 +156,10 @@ class VickreyMhl(Mahalanobis, Vickrey):
         vickreyChoice: np.array = np.array([npr.choice(2, p=[p[w], 1-p[w]]) for w in range(length)]) #choose the closest embedding according to the probabilities
         noisyEmbeddings: np.array = self.embMatrix[closest[np.arange(length), vickreyChoice]] #get the noisy embeddings
         
-        finalQuery: List[str] = []
-        distances:np.array = self.euclideanDistance(noisyEmbeddings, self.embMatrix)
-        found:np.array = np.argpartition(distances, 1, axis=1)[:, :1]
-        for f in found:
-            finalQuery.append(self.index2word[f[0]])
-        return ' '.join(finalQuery)
+        distance = self.euclideanDistance(noisyEmbeddings, self.embMatrix)
+        found = np.argpartition(distance, 1, axis=1)[:, :1]
+        
+        finalText = self.indexes2words(found)
+       
+        return ' '.join(finalText)
         
