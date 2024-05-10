@@ -43,3 +43,45 @@ class SanText(AbstractSamplingPerturbationMechanism):
         '''
         super().__init__(kwargs)
         self.name:str = 'SanText'
+        self.prob_matrix = {}
+
+    def processText(self, text:List[str])->str:
+        '''
+        method selfProcessQueryText: this method is used to process the Text and return the obfuscated Text
+
+        : param embs: np.array the embeddings of the words
+        : return: str the obfuscated Text
+        '''
+        length:int = len(text) #number of words in the text
+        text_tuple:tuple = tuple(text)
+        #get embeddings
+        if (text_tuple, self.epsilon) not in self.prob_matrix.keys():
+            embs = []
+            for word in text:
+                if word not in self.vocab.embeddings.keys():
+                    embs.append(np.zeros(self.embMatrix.shape[1]) + npr.normal(0, 1, self.embMatrix.shape[1]))
+                else:
+                    embs.append(self.vocab.embeddings[word])
+            embs:np.array = np.array(embs)
+        # Compute distance matrix between word and all words in vocabulary
+            distance:np.array = self.euclideanDistance(embs, self.embMatrix)
+            # Compute probability
+            exp_neg_distance:np.array = np.exp(-0.5 * self.epsilon * distance)
+            total_sum:np.array = np.reciprocal(np.sum(exp_neg_distance, axis=1))
+            probabilities:np.array = exp_neg_distance * total_sum[:, np.newaxis]
+            
+            # Normalize
+            probabilities /= np.sum(probabilities, axis=1, keepdims=True)
+            
+            # Add the probabilities to the dictionary
+            self.prob_matrix[(text_tuple, self.epsilon)] = probabilities
+        else:
+            probabilities = self.prob_matrix[(text_tuple, self.epsilon)]
+        
+        # Sampled obfuscated word should be a list of length len(text)
+        sampled_indices:List[np.array] = [np.random.choice(self.embMatrix.shape[0], p=prob) for prob in probabilities]
+        sampled_obfuscated_text:List[str] = [list(self.vocab.embeddings.keys())[index] for index in sampled_indices]
+        
+        return " ".join(sampled_obfuscated_text)
+        
+        

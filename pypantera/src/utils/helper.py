@@ -78,6 +78,11 @@ def saveResults(results:List[pd.DataFrame], mechanisms:List[AbstractTextObfuscat
             os.makedirs('./results')
         if not os.path.exists(f'./results/{args.task}'):
             os.makedirs(f'./results/{args.task}')
-        df.to_csv(f'./results/{args.task}/obfuscated_{mechanisms[i].__class__.__name__}_{mechanisms[i].epsilon}.csv', index=False)
+        if not os.path.exists(f'./results/{args.task}/{mechanisms[i].__class__.__name__}'):
+            os.makedirs(f'./results/{args.task}/{mechanisms[i].__class__.__name__}')
+        df.to_csv(f'./results/{args.task}/{mechanisms[i].__class__.__name__}/obfuscatedText_{mechanisms[i].__class__.__name__}_{mechanisms[i].epsilon}.csv', index=False)
         logger.info(f"Saved the obfuscated queries to a csv file for mechanism {mechanisms[i].__class__.__name__} with epsilon {mechanisms[i].epsilon}")
+    logger.info('Obfuscation process completed successfully!')
+    os.system(f'cp ./pypantera/logs/logger.log ./results/{args.task}/{mechanisms[0].__class__.__name__}/logger_{mechanisms[0].__class__.__name__}.log')
+        
     

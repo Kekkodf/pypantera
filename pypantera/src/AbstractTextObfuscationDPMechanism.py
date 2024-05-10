@@ -16,17 +16,19 @@ class AbstractTextObfuscationDPMechanism():
         self.embMatrix: np.array = np.array(
             list(self.vocab.embeddings.values())
             ) #load the embeddings matrix
-        self.index2word: dict = {
-            i: word 
-            for i, word in enumerate(self.vocab.embeddings.keys())
-            } #create the index to word mapping
-        self.word2index: dict = {
+        self._word2index: dict = {
             word: i 
             for i, word in enumerate(self.vocab.embeddings.keys())
-            } #create the word to index mapping
+            } 
+        self._index2word: dict = {
+            i: word for word,i in self._word2index.items() 
+        }        
         assert 'epsilon' in kwargs, 'The epsilon parameter must be provided'
         assert kwargs['epsilon'] > 0, 'The epsilon parameter must be greater than 0'
         self.epsilon: float = kwargs['epsilon'] #set the epsilon parameter
+    
+    def indexes2words(self, indexes):
+        return [self._index2word[e] for f in indexes for e in f]
     
     def obfuscateText(self, 
                       data:pd.DataFrame, 

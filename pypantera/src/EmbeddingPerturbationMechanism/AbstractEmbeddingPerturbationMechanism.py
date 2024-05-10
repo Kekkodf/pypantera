@@ -62,31 +62,7 @@ class AbstractEmbeddingPerturbationMechanism(AbstractTextObfuscationDPMechanism)
         data['text'] = data['text'].apply(lambda x: x.lower().split())
         df = pd.DataFrame(columns=['id', 'text', 'obfuscatedText'])
         #obfuscate the text column
-        obfuscatedText = pd.concat([data['text'].apply(lambda x: self.processQuery(self.noisyEmb(x))) for _ in range(numberOfTimes)], axis=1)
+        obfuscatedText = pd.concat([data['text'].apply(lambda x: self.processText(self.noisyEmb(x))) for _ in range(numberOfTimes)], axis=1)#note that here we're passing the embeddings noisy
         df = pd.concat([data, pd.DataFrame({'obfuscatedText': obfuscatedText.values.tolist()})], axis=1)
         df['text'] = df['text'].apply(lambda x: ' '.join(x))
         return df
-    
-    @staticmethod
-    def euclideanDistance(x: np.array, 
-                          y: np.array) -> np.array:
-        '''
-        method euclideanDistance: this method is used to compute the euclidean distance between two matrices
-
-        Remark: this method is an obtimization of the euclidean distance computation between two matrices
-
-        : param x: np.array the first matrix
-        : param y: np.array the second matrix
-        : return: np.array the euclidean distance matrix between the two matrices
-
-        Usage example:
-        >>> x: np.array = np.array([1, 2, 3])
-        >>> y: np.array = np.array([4, 5, 6])
-        >>> euclideanDistance(x, y)
-        '''
-
-        x: np.array = np.array(x)
-        y: np.array = np.array(y)
-        x_expanded: np.array = x[:, np.newaxis, :]
-        y_expanded: np.array = y[np.newaxis, :, :]
-        return np.sqrt(np.sum((x_expanded - y_expanded) ** 2, axis=2))

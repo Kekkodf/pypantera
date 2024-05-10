@@ -79,14 +79,14 @@ class CMP(AbstractEmbeddingPerturbationMechanism):
         Z: np.array = Y * X #compute the final noise
         return Z
 
-    def processQuery(self, 
+    def processText(self, 
                      embs: np.array) -> str:
         
         '''
-        method processQuery: this method is used to process the query and return the obfuscated query
+        method processText: this method is used to process the Text and return the obfuscated Text
 
         : param embs: np.array the embeddings of the words
-        : return: str the obfuscated query
+        : return: str the obfuscated Text
 
         Usage example:
         (Considering that the Mechanism Object mech1 has been created
@@ -94,12 +94,12 @@ class CMP(AbstractEmbeddingPerturbationMechanism):
 
         # Assuming that the embeddings of the words are known, e.g.: [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
         >>> embs: np.array = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-        >>> mech1.processQuery(embs)
+        >>> mech1.processText(embs)
         '''
         length: int = len(embs)
         distance: np.array = self.euclideanDistance(embs, self.embMatrix)
         closest: np.array = np.argpartition(distance, 1, axis=1)[:, :1]
-        finalQuery: List[str] = []
+        finalText: List[str] = []
         for i in range(length):
-            finalQuery.append(list(self.vocab.embeddings.keys())[closest[i][0]])
-        return ' '.join(finalQuery)
+            finalText.append(list(self.vocab.embeddings.keys())[closest[i][0]])
+        return ' '.join(finalText)
