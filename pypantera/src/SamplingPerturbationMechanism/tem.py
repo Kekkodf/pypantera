@@ -127,7 +127,10 @@ class TEM(AbstractSamplingPerturbationMechanism):
             #get the word with the highest score
             selectedWord:str = max(Lw, key=lambda x: x[1])[0]
             if selectedWord == 'PLACEHOLDERWORD':
-                selectedWord:str = np.random.choice(L_hat_w, 1)[0]
+                try:
+                    selectedWord:str = np.random.choice(L_hat_w, 1)[0]
+                except:
+                    selectedWord:str = word
             finalText.append(selectedWord)
         return ' '.join(finalText)
             
