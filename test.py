@@ -47,4 +47,4 @@ if __name__ == '__main__':
     
     #save the results to a csv file
     saveResults(results, mechanisms, args, logger)
-    logger.info("Obfuscation process completed successfully!")
+    logger.info("Program terminated successfully!")

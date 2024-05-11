@@ -99,9 +99,12 @@ def selectMechanism(args:object, logger:object) -> list:
         elif args.mechanism == 'CusText':
             mechanisms = [CusText({'embPath': args.embPath, 'epsilon': e, 'k':args.k, 'distance':args.distance}) for e in args.epsilons]
             logger.info(f"K: {mechanisms[0].k}")
+            logger.info(f"Distance: {mechanisms[0].distance}")
         elif args.mechanism == 'TEM':
             mechanisms = [TEM({'embPath': args.embPath, 'epsilon': e, 'beta': args.beta}) for e in args.epsilons]
-            logger.info(f"Beta: {mechanisms[0].beta} --> Gamma: {mechanisms[0].gamma}")
+            logger.info(f"Beta: {mechanisms[0].beta}")
+            for i in range(len(mechanisms)):
+                logger.info(f"For mechansim with epsilon = {mechanisms[i].epsilon}, Gamma computed: {mechanisms[i].gamma}")
     else:
         logger.error('The mechanism provided is not valid. Please choose one of the following mechanisms: CMP, Mahalanobis, VickreyCMP, VickreyMhl, CusText')
         exit(1)

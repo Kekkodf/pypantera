@@ -9,18 +9,27 @@ class TEM(AbstractSamplingPerturbationMechanism):
     '''
     BibTeX of TEM Mechanism, extends CMP mechanism class of the pypanter package:
 
-    @article{DBLP:journals/corr/abs-2107-07928,
-    author       = {Ricardo Silva Carvalho and Theodore Vasiloudis and Oluwaseyi Feyisetan},
-    title        = {{TEM:} High Utility Metric Differential Privacy on Text},
-    journal      = {CoRR},
-    volume       = {abs/2107.07928},
-    year         = {2021},
-    url          = {https://arxiv.org/abs/2107.07928},
-    eprinttype    = {arXiv},
-    eprint       = {2107.07928},
-    timestamp    = {Wed, 21 Jul 2021 15:55:35 +0200},
-    biburl       = {https://dblp.org/rec/journals/corr/abs-2107-07928.bib},
-    bibsource    = {dblp computer science bibliography, https://dblp.org}
+    @inproceedings{DBLP:conf/sdm/CarvalhoVF023,
+        author       = {Ricardo Silva Carvalho and
+                         Theodore Vasiloudis and
+                         Oluwaseyi Feyisetan and
+                         Ke Wang},
+         editor       = {Shashi Shekhar and
+                         Zhi{-}Hua Zhou and
+                         Yao{-}Yi Chiang and
+                         Gregor Stiglic},
+         title        = {{TEM:} High Utility Metric Differential Privacy on Text},
+         booktitle    = {Proceedings of the 2023 {SIAM} International Conference on Data Mining,
+                         {SDM} 2023, Minneapolis-St. Paul Twin Cities, MN, USA, April 27-29,
+                         2023},
+         pages        = {883--890},
+         publisher    = {{SIAM}},
+         year         = {2023},
+         url          = {https://doi.org/10.1137/1.9781611977653.ch99},
+         doi          = {10.1137/1.9781611977653.CH99},
+         timestamp    = {Tue, 17 Oct 2023 16:40:14 +0200},
+         biburl       = {https://dblp.org/rec/conf/sdm/CarvalhoVF023.bib},
+         bibsource    = {dblp computer science bibliography, https://dblp.org}
     }
     '''
     def __init__(self, kwargs: dict[str:object]) -> None:
@@ -57,34 +66,6 @@ class TEM(AbstractSamplingPerturbationMechanism):
         self.candidates: dict = {}
         #self._internalPreprocessing()
 
-    def _internalPreprocessing(self) -> List[dict]:
-        '''
-        private method _internalPreprocessing: this method is used to preprocess the embeddings matrix accordingly to TEM mechanism
-        '''
-        #get the list of words
-        words: List[str] = list(self.vocab.embeddings.keys())
-        #compute the distances between the embeddings in the vocabulary
-        with mp.Pool(mp.cpu_count()) as pool:
-            pool.map(self.speedUp, [(words, w) for w in words])
-
-    def speedUp(self, t:tuple) -> None:
-        words:list = t[0]
-        w:str = t[1]
-        distances = self.euclideanDistance(np.array(self.vocab.embeddings[w]).reshape(1,-1), np.array(self.embMatrix))
-        distances = distances[0]
-        #create L_w selecting the words that are below the gamma
-        Lw = [(words[i], distances[i]) for i in range(len(words)) if distances[i] < self.gamma]
-        #create L_hat_w selecting the words that are in self.vocab.embeddings.keys() not in Lw
-        L_hat_w = [(words[i], distances[i]) for i in range(len(words)) if distances[i] >= self.gamma]
-        try:
-            score = -self.gamma+2*np.log(len(L_hat_w)/self.epsilon)
-            Lw.append(('PLACE_HOLDER_ITEM', score))
-        except RuntimeWarning:
-            score = -np.inf
-            Lw.append(('PLACE_HOLDER_ITEM', score))
-        self.candidates.update({w: (Lw, L_hat_w)})
-
-
     def pullNoise(self) -> np.array:
         '''
         pullNoise method: this method is used to pull noise from the Laplace distribution
@@ -99,16 +80,32 @@ class TEM(AbstractSamplingPerturbationMechanism):
         '''
         gumbel_mean: float = 0
         gumbel_scale: float = 2/self.epsilon
-        return npr.gumbel(gumbel_mean, gumbel_scale, self.embMatrix.shape[1])
+        return npr.gumbel(gumbel_mean, gumbel_scale, 1)
 
-    def processQuery(self, 
-                 embs: np.array) -> str:
+    def _getLw(self, word:str) -> tuple[List[tuple], List[str]]:
+        distance:np.array = self.euclideanDistance(self.vocab.embeddings[word].reshape(1,-1), self.embMatrix)
+        #select only distances that are below self.gamma
+        indices_Lw:list = np.where(distance[0] <= self.gamma)[0]
+        indices_L_hat_w:list = np.where(distance[0] > self.gamma)[0]
+        Lw:List[tuple] = [(self._index2word[i], -distance[0][i]) for i in indices_Lw]
+        L_hat_w:list = [self.embMatrix[i] for i in indices_L_hat_w]
+        if len(L_hat_w) == 0:
+            #set value to -inf
+            temp_score:float = -np.inf
+        else:
+            temp_score:float = -self.gamma + 2 *np.log(len(L_hat_w))/self.epsilon
+        tempWord:str = 'PLACEHOLDERWORD'
+        Lw.append((tempWord, temp_score))
+        return Lw, L_hat_w
+
+    def processText(self, 
+                 text:List[str]) -> str:
         '''
-        processQuery method: this method is used to process the query accordingly
+        processText method: this method is used to process the Text accordingly
         to the definition of the TEM mechanism, see BibTeX ref
 
-        : param embs: np.array the embeddings of the query
-        : return: str the obfuscated query
+        : param embs: np.array the embeddings of the Text
+        : return: str the obfuscated Text
 
         Usage example:
         >>> embPath: str = 'pathToMyEmbeddingsFile.txt'
@@ -117,10 +114,24 @@ class TEM(AbstractSamplingPerturbationMechanism):
         >>> mech1 = TEM({'embPath': embPath, 'epsilon': eps, 'beta': beta})
         >>> words: List[str] = ['what is the capitol of france']
         >>> embs: np.array = mech1.getEmbeddings(words)
-        >>> obfuscatedQuery: str = mech1.processQuery(embs)
+        >>> obfuscatedText: str = mech1.processText(embs)
         '''
-        #check the value of the embeddings returning the keys of the embeddings
-        words: List[str] = [self.vocab.embeddings.keys()[np.where(self.vocab.embeddings.values() == emb)] for emb in embs]
+        #print(f'text: {text}')
+        finalText:List[str] = []
+        for word in text:
+            if word not in self.vocab.embeddings.keys():
+                self.vocab.embeddings[word] = np.zeros(self.embMatrix.shape[1]) + npr.normal(0, 1, self.embMatrix.shape[1])
+            Lw, L_hat_w = self._getLw(word)
+            #add to the scores in Lw the noise
+            Lw:List[tuple]= [(w, s + self.pullNoise()) for w, s in Lw]
+            #get the word with the highest score
+            selectedWord:str = max(Lw, key=lambda x: x[1])[0]
+            if selectedWord == 'PLACEHOLDERWORD':
+                selectedWord:str = np.random.choice(L_hat_w, 1)[0]
+            finalText.append(selectedWord)
+        return ' '.join(finalText)
+            
+
         
 
 
