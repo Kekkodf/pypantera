@@ -35,7 +35,7 @@ if __name__ == '__main__':
     data:pd.DataFrame = pd.read_csv(args.inputPath, sep = ',')
 
     #obfuscate the queries using multiprocessing
-    num_cores:int = min(2, mp.cpu_count())
+    num_cores:int = min(30, mp.cpu_count())
     
     with mp.Pool(num_cores) as pool:
         results:List[pd.DataFrame] = pool.starmap(AbstractTextObfuscationDPMechanism.obfuscateText, [(mech, data, args.numberOfObfuscations) for mech in mechanisms])

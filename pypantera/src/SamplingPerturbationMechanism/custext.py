@@ -6,6 +6,7 @@ import multiprocessing as mp
 from typing import List
 import time
 from collections import defaultdict
+from sklearn.metrics.pairwise import euclidean_distances
 
 '''
 # CusText Mechanism
@@ -59,30 +60,86 @@ class CusText(AbstractSamplingPerturbationMechanism):
         assert 'k' in kwargs, 'The k parameter must be provided'
         assert kwargs['k'] > 0, 'The k parameter must be greater than 0'
         self.k: int = kwargs['k']
+        assert 'distance' in kwargs, 'The distance parameter must be provided'
+        assert kwargs['distance'] in ['euclidean', 'cosine'], 'The distance parameter must be either euclidean or cosine'
+        self.distance:str = kwargs['distance']
         self.name:str = 'CusText'
-        self._simWordDict, self._pDict = self._getCustomizedMapping()
+        self._simWordDict = {}
+        self._pDict = {}
 
-    def _getCustomizedMapping(self):
-        wordHash:defaultdict = defaultdict(str)
+    def _getCustomizedMapping(self, word) -> tuple[defaultdict, defaultdict]:
+        '''
+        precompute the mapping of the words and their respective probabilities
+        '''
         simWordDict:defaultdict = defaultdict(list)
         pDict:defaultdict = defaultdict(list)
-        wordFreq = self.vocab.embeddings.keys()
-        for i in range(len(wordFreq)):
-            word = wordFreq[i]
-            if word not in wordHash:
-                indexList = self.euclideanDistance(self.vocab.embeddings[word], self.embMatrix).argsort()[:self.k]
-                wordList = [self._index2word[index] for index in indexList]
+        wordFreq = list(self._simWordDict.keys())
+        if self.distance == 'euclidean':
+            if word not in wordFreq:
+                try:
+                    wordEmb = self.vocab.embeddings[word].reshape(1,-1)
+                except:
+                    wordEmb = np.zeros(self.embMatrix.shape[1]) + npr.normal(0, 1, self.embMatrix.shape[1]).reshape(1,-1)
+                    
+                indexList = self.euclideanDistance(wordEmb, self.embMatrix).argsort()[:self.k][0]
+                wordList = [self._index2word[index] for index in indexList[:self.k]]
                 embeddingList = np.array([self.vocab.embeddings[w] for w in wordList])
-                
 
+                simDistList = self.euclideanDistance(wordEmb, embeddingList)[0]
+                min_max_dist = max(simDistList) - min(simDistList)
+                min_dist = min(simDistList)
+                newSimDistList = [-(x-min_dist)/min_max_dist for x in simDistList]
+                tmp = [np.exp(self.epsilon*x/2) for x in newSimDistList]
+                norm = sum(tmp)
+                p = [x/norm for x in tmp]
+                pDict[word] = p
+                simWordDict[word] = wordList
+                self._pDict[word] = p
+                self._simWordDict[word] = wordList 
+            else:
+                simWordDict[word] = self._simWordDict[word]
+                pDict[word] = self._pDict[word]
 
-    def processText(self,text:List[str])->str:
-        '''
+        elif self.distance == 'cosine':
+            if word not in wordFreq:
+                indexList = self.cosineSimilarity(self.vocab.embeddings[word].reshape(1,-1), self.embMatrix).argsort()[:self.k][0]
+                wordList = [self._index2word[index] for index in indexList[:self.k]]
+                embeddingList = np.array([self.vocab.embeddings[w] for w in wordList])
+
+                simDistList = self.cosineSimilarity(self.vocab.embeddings[word].reshape(1,-1), embeddingList)[0]
+                min_max_dist = max(simDistList) - min(simDistList)
+                min_dist = min(simDistList)
+                newSimDistList = [(x-min_dist)/min_max_dist for x in simDistList]
+                tmp = [np.exp(self.epsilon*x/2) for x in newSimDistList]
+                norm = sum(tmp)
+                p = [x/norm for x in tmp]
+                pDict[word] = p
+                simWordDict[word] = wordList
+                self._pDict[word] = p
+                self._simWordDict[word] = wordList 
+            else:
+                simWordDict[word] = self._simWordDict[word]
+                pDict[word] = self._pDict[word]
+        return simWordDict, pDict
+        ...    
+
+    #def _generateText(self, text:str) -> str:
+    #    ...
+
+    def processText(self, text:List[str])->str:
+        ''' 
         method selfProcessQueryText: this method is used to process the Text and return the obfuscated Text
 
         : param embs: np.array the embeddings of the words
         : return: str the obfuscated Text
         '''
+        finalText:list = []
+        for word in text:
+            simWordDict, pDict = self._getCustomizedMapping(word)
+            newWord:str = np.random.choice(simWordDict[word], 1, p=pDict[word])[0]
+            finalText.append(newWord)
+        return ' '.join(finalText)
+            
         ...
         
 

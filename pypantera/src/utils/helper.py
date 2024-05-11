@@ -52,7 +52,8 @@ def createParser() -> object:
     parser.add_argument('--t', '-t', type=float, help='The treshold value to use Vickrey mechanisms', default=0.75)
     parser.add_argument('--beta', '-beta', type=float, help='The beta value to use for the TEM mechanism', default=0.001)
     parser.add_argument('--lam', '-lam', type=float, help='The lambda value to use for the Mahalanobis and Vickrey mechanisms', default=1)
-    parser.add_argument('--k', '-k', type=int, help='The number of words to sample for the CusText mechanism', default=5)
+    parser.add_argument('--k', '-k', type=int, help='The number of words to sample for the CusText mechanism', default=10)
+    parser.add_argument('--distance', '-d', type=str, help='The distance metric to use for the CusText mechanism', default='euclidean')
     parser.add_argument('--epsilons','-e', type=float, help='The list of epsilon values to use', nargs='+', default=[1, 5, 10, 12.5, 15, 17.5, 20, 50])
     parser.add_argument('--numberOfObfuscations', '-n', type=int, help='The number of obfuscations to perform', default=1)
     return parser
@@ -96,7 +97,7 @@ def selectMechanism(args:object, logger:object) -> list:
         if args.mechanism == 'SanText':
             mechanisms = [SanText({'embPath': args.embPath, 'epsilon': e}) for e in args.epsilons]
         elif args.mechanism == 'CusText':
-            mechanisms = [CusText({'embPath': args.embPath, 'epsilon': e, 'k':args.k}) for e in args.epsilons]
+            mechanisms = [CusText({'embPath': args.embPath, 'epsilon': e, 'k':args.k, 'distance':args.distance}) for e in args.epsilons]
             logger.info(f"K: {mechanisms[0].k}")
         elif args.mechanism == 'TEM':
             mechanisms = [TEM({'embPath': args.embPath, 'epsilon': e, 'beta': args.beta}) for e in args.epsilons]
