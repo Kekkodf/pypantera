@@ -6,8 +6,14 @@ import multiprocessing as mp
 from typing import List
 import time
 
+'''
+# SanText mechanism
+'''
+
 class SanText(AbstractSamplingPerturbationMechanism):
     '''
+    # SanText Mechansim
+    
     BibTeX of SanText Mechanism, extends CMP mechanism class of the pypanter package:
 
     @inproceedings{ACL21/YueDu21,
