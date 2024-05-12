@@ -117,10 +117,15 @@ class TEM(AbstractSamplingPerturbationMechanism):
         >>> obfuscatedText: str = mech1.processText(embs)
         '''
         #print(f'text: {text}')
-        finalText:List[str] = []
-        for word in text:
+        def _processWord(word:str) -> str:
+            '''
+            _processWord method: this method is used to process the word accordingly to the definition of the TEM mechanism
+
+            : param word: str the word to process
+            : return: str the processed obfuscated word
+            '''
             if word not in self.vocab.embeddings.keys():
-                self.vocab.embeddings[word] = np.zeros(self.embMatrix.shape[1]) + npr.normal(0, 1, self.embMatrix.shape[1])
+                self.vocab.embeddings[word] = np.zeros(self.embMatrix.shape[1]) + npr.normal(0, 1, self.embMatrix.shape[1]) #handle OoV words
             Lw, L_hat_w = self._getLw(word)
             #add to the scores in Lw the noise
             Lw:List[tuple]= [(w, s + self.pullNoise()) for w, s in Lw]
@@ -131,7 +136,9 @@ class TEM(AbstractSamplingPerturbationMechanism):
                     selectedWord:str = np.random.choice(L_hat_w, 1)[0]
                 except:
                     selectedWord:str = word
-            finalText.append(selectedWord)
+            return selectedWord
+        
+        finalText:List[str] = list(map(_processWord, text))
         return ' '.join(finalText)
             
 
