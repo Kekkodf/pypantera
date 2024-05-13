@@ -15,13 +15,25 @@ class AbstractVickrey(AbstractEmbeddingPerturbationMechanism):
         # Vickrey
         BibTeX of Vickrey Mechanism, extends Mechanism class of the pypanter package:
 
-        @article{Xu2021OnAU,
-        title={On a Utilitarian Approach to Privacy Preserving Text Generation},
-        author={Zekun Xu and Abhinav Aggarwal and Oluwaseyi Feyisetan and Nathanael Teissier},
-        journal={ArXiv},
-        year={2021},
-        volume={abs/2104.11838},
-        url={https://www.semanticscholar.org/reader/dfd8fc9966ca8ec5c8bdc2dfc94099285f0e07a9}
+        @inproceedings{xu-etal-2021-utilitarian,
+            title = "On a Utilitarian Approach to Privacy Preserving Text Generation",
+            author = "Xu, Zekun  and
+              Aggarwal, Abhinav  and
+              Feyisetan, Oluwaseyi  and
+              Teissier, Nathanael",
+            editor = "Feyisetan, Oluwaseyi  and
+              Ghanavati, Sepideh  and
+              Malmasi, Shervin  and
+              Thaine, Patricia",
+            booktitle = "Proceedings of the Third Workshop on Privacy in Natural Language Processing",
+            month = jun,
+            year = "2021",
+            address = "Online",
+            publisher = "Association for Computational Linguistics",
+            url = "https://aclanthology.org/2021.privatenlp-1.2",
+            doi = "10.18653/v1/2021.privatenlp-1.2",
+            pages = "11--20",
+            abstract = "Differentially-private mechanisms for text generation typically add carefully calibrated noise to input words and use the nearest neighbor to the noised input as the output word. When the noise is small in magnitude, these mechanisms are susceptible to reconstruction of the original sensitive text. This is because the nearest neighbor to the noised input is likely to be the original input. To mitigate this empirical privacy risk, we propose a novel class of differentially private mechanisms that parameterizes the nearest neighbor selection criterion in traditional mechanisms. Motivated by Vickrey auction, where only the second highest price is revealed and the highest price is kept private, we balance the choice between the first and the second nearest neighbors in the proposed class of mechanisms using a tuning parameter. This parameter is selected by empirically solving a constrained optimization problem for maximizing utility, while maintaining the desired privacy guarantees. We argue that this empirical measurement framework can be used to align different mechanisms along a common benchmark for their privacy-utility tradeoff, particularly when different distance metrics are used to calibrate the amount of noise added. Our experiments on real text classification datasets show up to 50{\%} improvement in utility compared to the existing state-of-the-art with the same empirical privacy guarantee.",
         }
         '''
         super().__init__(kwargs)
