@@ -45,10 +45,11 @@ def createParser() -> object:
     parser:object = argparse.ArgumentParser(description='Obfuscate texts using different mechanisms')
 
     #mechanism params
-    parser.add_argument('--task', type=str, help='The task to perform', default='retrieval')
+    parser.add_argument('--task', '-tk', type=str, help='The task to perform', default='retrieval')
     parser.add_argument('--embPath', '-eP', type=str, help='The path to the embeddings file')
     parser.add_argument('--inputPath', '-i', type=str, help='The path to the input file')
-    parser.add_argument('--mechanism', '-m', type=str, help='The mechanism to use', default='CMP')
+    parser.add_argument('--outputPath', '-o', type=str, help='The path to the output file')
+    parser.add_argument('--mechanism', '-m', type=str, help='The mechanism to use', default='CMP', choices=['CMP', 'Mahalanobis', 'VickreyCMP', 'VickreyMhl', 'CusText', 'SanText', 'TEM'])
     parser.add_argument('--t', '-t', type=float, help='The treshold value to use Vickrey mechanisms', default=0.75)
     parser.add_argument('--beta', '-beta', type=float, help='The beta value to use for the TEM mechanism', default=0.001)
     parser.add_argument('--lam', '-lam', type=float, help='The lambda value to use for the Mahalanobis and Vickrey mechanisms', default=1)
@@ -120,6 +121,7 @@ def saveResults(results:List[pd.DataFrame], mechanisms:List[AbstractTextObfuscat
         df['mechanism'] = mechanisms[i].__class__.__name__
         df['epsilon'] = mechanisms[i].epsilon
         #save the obfuscated text to a csv file
+        output_path = args.outputPath
         if path == None:
             if not os.path.exists('./results'):
                 os.makedirs('./results')

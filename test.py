@@ -1,11 +1,7 @@
-import time
 import numpy as np
 import pandas as pd
-import os
 from typing import List
 import multiprocessing as mp
-import argparse
-import logging
 
 from pypantera.src.AbstractTextObfuscationDPMechanism import AbstractTextObfuscationDPMechanism
 from pypantera.src.utils.helper import createLogger, createParser, selectMechanism, saveResults
