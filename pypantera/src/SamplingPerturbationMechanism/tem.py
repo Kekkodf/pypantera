@@ -9,28 +9,17 @@ class TEM(AbstractSamplingPerturbationMechanism):
     '''
     BibTeX of TEM Mechanism, extends CMP mechanism class of the pypanter package:
 
-    @inproceedings{DBLP:conf/sdm/CarvalhoVF023,
-        author       = {Ricardo Silva Carvalho and
-                         Theodore Vasiloudis and
-                         Oluwaseyi Feyisetan and
-                         Ke Wang},
-         editor       = {Shashi Shekhar and
-                         Zhi{-}Hua Zhou and
-                         Yao{-}Yi Chiang and
-                         Gregor Stiglic},
-         title        = {{TEM:} High Utility Metric Differential Privacy on Text},
-         booktitle    = {Proceedings of the 2023 {SIAM} International Conference on Data Mining,
-                         {SDM} 2023, Minneapolis-St. Paul Twin Cities, MN, USA, April 27-29,
-                         2023},
-         pages        = {883--890},
-         publisher    = {{SIAM}},
-         year         = {2023},
-         url          = {https://doi.org/10.1137/1.9781611977653.ch99},
-         doi          = {10.1137/1.9781611977653.CH99},
-         timestamp    = {Tue, 17 Oct 2023 16:40:14 +0200},
-         biburl       = {https://dblp.org/rec/conf/sdm/CarvalhoVF023.bib},
-         bibsource    = {dblp computer science bibliography, https://dblp.org}
-    }
+    @inbook{doi:10.1137/1.9781611977653.ch99,
+        author = {Ricardo Silva Carvalho and Theodore Vasiloudis and Oluwaseyi Feyisetan and Ke Wang},
+        title = {TEM: High Utility Metric Differential Privacy on Text},
+        booktitle = {Proceedings of the 2023 SIAM International Conference on Data Mining (SDM)},
+        chapter = {},
+        pages = {883-890},
+        doi = {10.1137/1.9781611977653.ch99},
+        URL = {https://epubs.siam.org/doi/abs/10.1137/1.9781611977653.ch99},
+        eprint = {https://epubs.siam.org/doi/pdf/10.1137/1.9781611977653.ch99},
+            abstract = { Abstract Ensuring the privacy of users whose data are used to train Natural Language Processing (NLP) models is necessary to build and maintain customer trust. Differential Privacy (DP) has emerged as the most successful method to protect the privacy of individuals. However, applying DP to the NLP domain comes with unique challenges. The most successful previous methods use a generalization of DP for metric spaces, and apply the privatization by adding noise to inputs in the metric space of word embeddings. However, these methods assume that one specific distance measure is being used, ignore the density of the space around the input, and assume the embeddings used have been trained on public data. In this work we propose Truncated Exponential Mechanism (TEM), a general method that allows the privatization of words using any distance metric, on embeddings that can be trained on sensitive data. Our method makes use of the exponential mechanism to turn the privatization step into a selection problem. This allows the noise applied to be calibrated to the density of the embedding space around the input, and makes domain adaptation possible for the embeddings. In our experiments, we demonstrate that our method outperforms the state-of-the-art in terms of utility for the same level of privacy, while providing more flexibility in the metric selection. }
+        }
     '''
     def __init__(self, kwargs: dict[str:object]) -> None:
         '''

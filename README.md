@@ -56,6 +56,12 @@ The mechansims implemented in pyPANTERA are divided in two categories:
     - Calibrated Multivariate Perturbations (**CMP**): Addition of sferical noise to the word embeddings. See reference [^2] for more information.
     - Mahalanobis Perturbations (**Mahalanobis**): Addition of eliptical noise to the word embeddings. See reference [^3] for more information.
     - Vickrey family of mechanisms (**Vickrey**): Perturbation performed using a treshold value to select the nearest perturbed embedding of a term. See reference [^4] for more information.
+    ù
+
+- **Word Sampling Perturbation**: This mechanism uses word sampling to obfuscate the text. The mechanism computes for each word in the text a list of neighbouring words with the respective scores, then it samples a substitution candidate from basing such sampling on the scores of the neighbouring terms and teh privacy budget $\varepsilon$. The mechansim implemented are the following:
+    - Customized Text (**CusText**): Sampling of the substitution candidate from the neighbouring $k$ words of the original word. See reference [^5] for more information.
+    - Sanitization Text (**SanText**): Sampling of the substitution candidate from the neighbouring words of the original word. See reference [^6] for more information.
+    - Truncated Exponential Mechanism (**TEM**): Sampling of the substitution candidate using the exponential mechanism with the scores of the neighbouring words. See reference [^7] for more information.
 
 ## Why use pyPANTERA?
 
@@ -76,3 +82,8 @@ The package is released under the GNU GENERAL PUBLIC LICENSE Version 3, 29 June 
 
 [^4]: [On a Utilitarian Approach to Privacy Preserving Text Generation](https://aclanthology.org/2021.privatenlp-1.2) (Xu et al., In Proceedings of the Third Workshop on Privacy in Natural Language Processing, 2021)
 
+[^5]: [A Customized Text Sanitization Mechanism with Differential Privacy](https://aclanthology.org/2023.findings-acl.355) (Chen et al., In Findings of the Association for Computational Linguistics, 2023)
+
+[^6]: [Differential Privacy for Text Analytics via Natural Text Sanitization](https://aclanthology.org/2021.findings-acl.337) (Yue et al., In Findings of the Association for Computational Linguistics, 2021)
+
+[^7]: [TEM: High Utility Metric Differential Privacy on Text]() (Carvalho et al., In Proceedings of the 2023 SIAM International Conference on Data Mining, 2023)
