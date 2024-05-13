@@ -62,12 +62,12 @@ The mechansims implemented in pyPANTERA are divided in two categories:
     - Sanitization Text (**SanText**): Sampling of the substitution candidate from the neighbouring words of the original word. See reference [^6] for more information.
     - Truncated Exponential Mechanism (**TEM**): Sampling of the substitution candidate using the exponential mechanism with the scores of the neighbouring words. See reference [^7] for more information.
 
-## How does pyPANTERA works?
+## How does pyPANTERA work?
 
 We provide a simple example to show how pyPANTERA works with a concrete example. We suggest to use the prepared virtual environment to run the example and the base script `test.py` to run the obfuscation pipeline.
 
 ```bash
-(virtualEnvPyPANTERA) python test.py --embPath /absolute/path/to/embeddings --inputPath /absolute/path/to/input/data --outputPath /absolute/path/to/output/data --mechanism MECHANISM --epsilon EPSILON --task TASK --numberOfObfuscations N --PARAMETERS
+python test.py --embPath /absolute/path/to/embeddings --inputPath /absolute/path/to/input/data --outputPath /absolute/path/to/output/data --mechanism MECHANISM --epsilon EPSILON --task TASK --numberOfObfuscations N --PARAMETERS
     
 ```
 
@@ -105,8 +105,28 @@ The script `test.py` has the following parameters, based on the mechanism parame
 Suppose you want to run the obfuscation pipeline using the `CMP` mechanism with the embeddings in the path `./embeddings/glove.6B.50d.txt`, the input data in the path `./data/input.csv`, and the output data in the path `./data/output.csv`, for all the default values of $\varepsilon$ obtaining only one obfuscation for the original text. You can run the following command:
 
 ```bash
-(virtualEnvPyPANTERA) python test.py --embPath /embeddings/glove.6B.50d.txt --inputPath /data/input.csv --outputPath /data/output/ --mechanism CMP
+python test.py --embPath /embeddings/glove.6B.50d.txt --inputPath /data/input.csv --outputPath /data/output/ --mechanism CMP
 ```
+
+## Final results overview
+
+Using the `test.py` script running CMP, embeddings 300d GloVe with the default parameters, we obtain the following results for the DL'19 queries dataset (overview of the first two rows, for $\varepsilon = 1, 5, 10$):
+
+| id | text | obfuscatedText | mechansim | epsilon | 
+|----|------|-----------------|-----------|---------|
+| 156493 | do goldfish grow | hipc householder 1976-1983|CMP|1|
+|1110199|what is wifi vs bluetooth|25-june nonsubscribers trimet edema ---|CMP|1|
+
+| id | text | obfuscatedText | mechansim | epsilon | 
+|----|------|-----------------|-----------|---------|
+| 156493 | do goldfish grow | foil householder scotland|CMP|5|
+|1110199|what is wifi vs bluetooth| galangal naat trimet edema ---|CMP|5|
+
+| id | text | obfuscatedText | mechansim | epsilon | 
+|----|------|-----------------|-----------|---------|
+| 156493 | do goldfish grow | do goldfish grow | CMP|10|
+|1110199|what is wifi vs bluetooth|out salvage terrestrial 7-3 bluetooth|CMP|10|
+
 
 ## License
 
