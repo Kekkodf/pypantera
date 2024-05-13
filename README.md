@@ -78,7 +78,17 @@ pyPANTERA requires that the input data is a CSV file with a column named `text` 
 
 The `--task | -tk` argument is used to specify the future task that you want to perform using the new obfuscated texts. The `--epsilon | -e` argument is used to specify the epsilon value for the differential privacy mechanism. The `--mechanism | -m` argument is used to specify the mechanism to use for the obfuscation. The `--numberOfObfuscations | -n` argument is used to specify the number of obfuscations to perform for the same text. Finally, the `--PARAMETERS` are the parameters for the mechanism that you want to use. We provide a specific list of parameters for each mechanism in the following section.
 
-### Prameters
+## UML of pyPANTERA
+
+The UML diagram of the pyPANTERA source code is displayied below:
+
+<center>
+
+![pyPANTER UML diagram](./images/classes.png)
+
+</center>
+
+## Prameters
 
 The script `test.py` has the following parameters, based on the mechanism parameters that you want to use:
 
@@ -103,17 +113,6 @@ The script `test.py` has the following parameters, based on the mechanism parame
 - **TEM**: The parameters for the TEM mechanism are the following:
     - `--beta`: The beta value for the exponential mechanism (default float: 0.001)
 
-
-## UML of pyPANTERA
-
-The UML diagram of the pyPANTERA source code is displayied below:
-
-<center>
-
-![pyPANTER UML diagram](./images/classes.png)
-
-</center>
-
 ## Example
 
 Suppose you want to run the obfuscation pipeline using the `CMP` mechanism with the embeddings in the path `./embeddings/glove.6B.50d.txt`, the input data in the path `./data/input.csv`, and the output data in the path `./data/output.csv`, for all the default values of $\varepsilon$ obtaining only one obfuscation for the original text. You can run the following command:
@@ -121,6 +120,8 @@ Suppose you want to run the obfuscation pipeline using the `CMP` mechanism with 
 ```bash
 python test.py --embPath /embeddings/glove.6B.50d.txt --inputPath /data/input.csv --outputPath /data/output/ --mechanism CMP
 ```
+
+To enhance the clarity of how pyPANTERA works, we add a toy Python Notebook to simulate some of the obfuscation implemented. 
 
 ## Final results overview
 
