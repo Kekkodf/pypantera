@@ -4,9 +4,9 @@ import multiprocessing as mp
 
 class Vocab():
     def __init__(self, embPath: str) -> None:
-        self.load_parallel(embPath)
+        self.loadParallel(embPath)
 
-    def load_parallel(self, embPath: str) -> None:
+    def loadParallel(self, embPath: str) -> None:
         if not os.path.exists(embPath):
             raise FileNotFoundError(f"File {embPath} not found")
 
@@ -20,14 +20,14 @@ class Vocab():
         # Create a pool of processes
         with mp.Pool(processes=num_processes) as pool:
             # Map each chunk to a separate process
-            results = pool.map(func=self.load_chunk, iterable=[(embPath, i * chunkSize, (i+1) * chunkSize) for i in range(num_processes)])
+            results = pool.map(func=self.loadChunk, iterable=[(embPath, i * chunkSize, (i+1) * chunkSize) for i in range(num_processes)])
 
         # Combine the results from all processes
         self.embeddings = {}
         for result in results:
             self.embeddings.update(result)
 
-    def load_chunk(self, args) -> dict:
+    def loadChunk(self, args) -> dict:
         embPath, start, end = args
         embeddings = {}
 

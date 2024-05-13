@@ -6,25 +6,26 @@
 
 ## What is pyPANTERA?
 
-pyPANTERA[^1] is a Python package that provides a simple interface to obfuscate natural language text. It is designed to help developers and data scientists to implement, reproduce and test state-of-the-art techniques for natural language obfuscation that implements $\varepsilon$ -Differential Privacy. The package is built using numpy, pandas, and scikit-learn libraries, and it is designed to be easy to use and integrate with other Python packages. 
+pyPANTERA[^1] is a Python package that provides a simple interface to obfuscate natural language text. It is designed to help developers and data scientists to implement, reproduce and test State-of-the-Art techniques for natural language obfuscation that implements $\varepsilon$ -Differential Privacy. The package is built using numpy, pandas, and scikit-learn libraries, and it is designed to be easy to use and integrate with other Python packages. 
 
-The package offers a combination of natural language processing and mathematical transformations to obfuscate natural language text. It replaces the opriginal string texts 
+The package offers a combination of natural language processing and mathematical transformations to obfuscate natural language text. It replaces the original string texts with their obfuscated versions, ensuring that the obfuscated text is not directly related to the original text. The obfuscation is performed using word embeddings and word sampling mechanisms, and it is designed to be $\varepsilon$-Differential Privacy compliant.
 
 ## Virtual Environment
 
-We provide also a virtual environment to run the package. You can create the virtual environment ***virtualEnvPyPANTERA*** using the ```environment.yml``` file, and running in your terminal:
+We provide also a virtual environment to run the package:
+1. You can create the virtual environment ***virtualEnvPyPANTERA*** using the ```environment.yml``` file, and running in your terminal:
 
 ```bash
 conda env create -f environment.yml
 ```
 
-Once the environment is created, you can verify that it is installed by running:
+2. Once the environment is created, you can verify that it is installed by running:
 
 ```bash
 conda env list
 ```
 
-Finnally, you can activate the virtual environment by running:
+3. Finnally, you can activate the virtual environment by running:
 
 ```bash
 conda activate virtualEnvPyPANTERA
@@ -48,7 +49,7 @@ import pypantera
 
 ## What can pyPANTERA do?
 
-pyPANTERA implements current state of the art mechanisms that uses $\varepsilon$-Differential Privacy to obfuscate natural language text. 
+pyPANTERA implements current State-of-the-Art mechanisms that uses $\varepsilon$-Differential Privacy to obfuscate natural language text. 
 
 The mechansims implemented in pyPANTERA are divided in two categories:
 
@@ -96,7 +97,7 @@ The script `test.py` has the following parameters, based on the mechanism parame
 - **VickreyCMP/VickreyMhl**: The parameters for the Vickrey mechanism are the following:
     - `--t`: The treshold value for the Vickrey mechanism (default float: 0.75). Eventually, if you use the `VickreyMhl` mechanism, you can also use the `--lam` parameter to set the lambda value for the Mahalanobis norm (default float: 1)
 - **CusText**: The parameters for the CusText mechanism are the following:
-    - `--k`: The number of neighbouring words to consider for the sampling (default int: 10)ù
+    - `--k`: The number of neighbouring words to consider for the sampling (default int: 10)
     - `--distance | -d`: The distance metric to use for the sampling (default str: 'euclidean')
 - **SanText**: The parameters for the SanText mechanism are only the general ones.
 - **TEM**: The parameters for the TEM mechanism are the following:
@@ -126,7 +127,6 @@ Using the `test.py` script running CMP, embeddings 300d GloVe with the default p
 |----|------|-----------------|-----------|---------|
 | 156493 | do goldfish grow | do goldfish grow | CMP|10|
 |1110199|what is wifi vs bluetooth|out salvage terrestrial 7-3 bluetooth|CMP|10|
-
 
 ## License
 

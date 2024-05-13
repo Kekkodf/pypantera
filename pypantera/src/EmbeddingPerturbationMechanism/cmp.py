@@ -54,8 +54,8 @@ class CMP(AbstractEmbeddingPerturbationMechanism):
         >>> eps: float = 0.1 #anyvalue of epsilon must be greater than 0
         >>> mech1 = Mechanism({'embPath': embPath, 'epsilon': eps})
         '''
-
         super().__init__(kwargs)
+        self.name: str = 'CMP'
         
 
     def pullNoise(self) -> np.array:

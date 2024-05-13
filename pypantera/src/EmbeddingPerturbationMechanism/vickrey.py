@@ -6,7 +6,6 @@ import numpy.random as npr
 from typing import List
 
 class AbstractVickrey(AbstractEmbeddingPerturbationMechanism):
-    
     '''
     Vickrey Mechanism
     '''
@@ -40,6 +39,7 @@ class AbstractVickrey(AbstractEmbeddingPerturbationMechanism):
         assert 't' in kwargs, 'The t parameter must be provided and between 0 and 1'
         assert kwargs['t'] >= 0 and kwargs['t'] <= 1, 'The t parameter must be between 0 and 1'
         self.t: float = kwargs['t']
+        self.name: str = 'Vickrey'
 
 class VickreyCMP(CMP, AbstractVickrey):
     def __init__(self, kwargs) -> None:

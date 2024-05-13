@@ -1,11 +1,6 @@
 from ..AbstractTextObfuscationDPMechanism import AbstractTextObfuscationDPMechanism
-
-import numpy as np
 import pandas as pd
-import os
 from typing import List
-import numpy.random as npr
-import multiprocessing as mp
 
 class AbstractSamplingPerturbationMechanism(AbstractTextObfuscationDPMechanism):
     '''

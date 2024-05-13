@@ -1,11 +1,7 @@
 from .utils.vocab import Vocab
-
 import numpy as np
 import pandas as pd
-import os
 from typing import List
-import numpy.random as npr
-import multiprocessing as mp
 
 class AbstractTextObfuscationDPMechanism():
     '''
@@ -27,7 +23,7 @@ class AbstractTextObfuscationDPMechanism():
         assert kwargs['epsilon'] > 0, 'The epsilon parameter must be greater than 0'
         self.epsilon: float = kwargs['epsilon'] #set the epsilon parameter
     
-    def indexes2words(self, indexes):
+    def indexes2words(self, indexes:list) -> List[str]:
         return [self._index2word[e] for f in indexes for e in f]
     
     def obfuscateText(self, 
@@ -68,7 +64,6 @@ class AbstractTextObfuscationDPMechanism():
         >>> y: np.array = np.array([4, 5, 6])
         >>> euclideanDistance(x, y)
         '''
-
         x: np.array = np.array(x)
         y: np.array = np.array(y)
         x_expanded: np.array = x[:, np.newaxis, :]
@@ -92,7 +87,6 @@ class AbstractTextObfuscationDPMechanism():
         >>> y: np.array = np.array([4, 5, 6])
         >>> cosineSimilarity(x, y)
         '''
-
         x: np.array = np.array(x)
         y: np.array = np.array(y)
         x_expanded: np.array = x[:, np.newaxis, :]

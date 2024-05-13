@@ -1,5 +1,4 @@
 from ..AbstractTextObfuscationDPMechanism import AbstractTextObfuscationDPMechanism
-
 import numpy as np
 import pandas as pd
 from typing import List
@@ -9,7 +8,6 @@ class AbstractEmbeddingPerturbationMechanism(AbstractTextObfuscationDPMechanism)
     '''
     Abstract class scramblingEmbeddingsMechanism: this class is used to define the abstract class of the scrambling Embeddings mechanisms
     '''
-    
     def __init__(self, kwargs: dict[str:object]) -> None:
         '''
         Constructur of the scramblingEmbeddingsMechanism class
