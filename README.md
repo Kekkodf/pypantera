@@ -67,7 +67,7 @@ The mechansims implemented in pyPANTERA are divided in two categories:
 We provide a simple example to show how pyPANTERA works with a concrete example. We suggest to use the prepared virtual environment to run the example and the base script `test.py` to run the obfuscation pipeline.
 
 ```bash
-python test.py --embPath /absolute/path/to/embeddings --inputPath /absolute/path/to/input/data --outputPath /absolute/path/to/output/data --mechanism MECHANISM --epsilon EPSILON --task TASK --numberOfObfuscations N --PARAMETERS
+(virtualEnvPyPANTERA) python test.py --embPath /absolute/path/to/embeddings --inputPath /absolute/path/to/input/data --outputPath /absolute/path/to/output/data --mechanism MECHANISM --epsilon EPSILON --task TASK --numberOfObfuscations N --PARAMETERS
     
 ```
 
@@ -105,7 +105,7 @@ The script `test.py` has the following parameters, based on the mechanism parame
 Suppose you want to run the obfuscation pipeline using the `CMP` mechanism with the embeddings in the path `./embeddings/glove.6B.50d.txt`, the input data in the path `./data/input.csv`, and the output data in the path `./data/output.csv`, for all the default values of $\varepsilon$ obtaining only one obfuscation for the original text. You can run the following command:
 
 ```bash
-python test.py --embPath /embeddings/glove.6B.50d.txt --inputPath /data/input.csv --outputPath /data/output/ --mechanism CMP
+(virtualEnvPyPANTERA) python test.py --embPath /embeddings/glove.6B.50d.txt --inputPath /data/input.csv --outputPath /data/output/ --mechanism CMP
 ```
 
 ## License
