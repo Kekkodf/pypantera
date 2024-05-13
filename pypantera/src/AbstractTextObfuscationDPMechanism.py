@@ -10,6 +10,18 @@ import multiprocessing as mp
 class AbstractTextObfuscationDPMechanism():
     '''
     Abstract class Mechanism: this class is used to define mechanism
+
+    # Attributes
+
+    - vocab: Vocab the vocabulary of the embeddings (refers to the Vocab class in the utils folder)
+
+    - embMatrix: np.array the embeddings matrix
+
+    - _word2index: dict the word to index dictionary
+
+    - _index2word: dict the index to word dictionary
+
+    - epsilon: float the epsilon parameter
     '''
     def __init__(self, kwargs: dict[str:object]) -> None:
         self.vocab: Vocab = Vocab(kwargs['embPath']) #load the vocabulary
@@ -55,6 +67,8 @@ class AbstractTextObfuscationDPMechanism():
     def euclideanDistance(x: np.array, 
                           y: np.array) -> np.array:
         '''
+        # Euclidean distance
+
         method euclideanDistance: this method is used to compute the euclidean distance between two matrices
 
         Remark: this method is an obtimization of the euclidean distance computation between two matrices
@@ -79,6 +93,8 @@ class AbstractTextObfuscationDPMechanism():
     def cosineSimilarity(x: np.array,
                          y: np.array) -> np.array:
         '''
+        # Cosine similarity
+        
         method cosineSimilarity: this method is used to compute the cosine similarity between two matrices
 
         Remark: this method is an obtimization of the cosine similarity computation between two matrices

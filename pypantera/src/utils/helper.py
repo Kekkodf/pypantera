@@ -5,8 +5,6 @@ import argparse
 from typing import List
 
 from ..AbstractTextObfuscationDPMechanism import AbstractTextObfuscationDPMechanism
-#from ..EmbeddingPerturbationMechanism import AbstractEmbeddingPerturbationMechanism
-#from ..EmbeddingPerturbationMechanism import AbstractSamplingPerturbationMechanism
 
 from ..EmbeddingPerturbationMechanism.cmp import CMP
 from ..EmbeddingPerturbationMechanism.mahalanobis import Mahalanobis
@@ -17,7 +15,9 @@ from ..SamplingPerturbationMechanism.custext import CusText
 from ..SamplingPerturbationMechanism.tem import TEM
 
 '''
-helper module: Provides helper functions to create the parser, the logger and to select the mechanism to use
+# Helper Module
+
+```helper module``` Provides helper functions to create the parser, the logger and to select the mechanism to use
 
 
 '''
@@ -34,11 +34,12 @@ def createParser() -> object:
 
     # Default Params :
     - mechanism: the mechanism to use (default: CMP)
-    - task: the task to compleate
+    - task: the task to compleate (default: retrieval)
     - t: the treshold value to use Vickrey mechanisms (default: 0.75)
-    - beta: the beta value to use for the TEM mechanism (default: 0.001)
+    - beta: the beta value to use for the TEM mechanism (default: 0.001) [N.B. In the logs are also displaied the values of the gamma computed for each epsilon value]
     - lam: the lambda value to use for the Mahalanobis and Vickrey mechanisms (default: 1)
-    - k: the number of words to sample for the CusText mechanism (default: 5)
+    - k: the number of words to sample for the CusText mechanism (default: 10)
+    - distance: the distance metric to use for the CusText mechanism (default: euclidean)
     - epsilons: the list of epsilon values to use (default: [1, 5, 10, 12.5, 15, 17.5, 20, 50])
     - numberOfObfuscations: the number of obfuscations to perform (default: 1)
     '''
@@ -61,6 +62,7 @@ def createParser() -> object:
 def createLogger() -> object:
     '''
     # createLogger()
+
     creates the logger object and returns it
     Runtime logs can be found in the pypantera/logs/logger.log file
     '''
