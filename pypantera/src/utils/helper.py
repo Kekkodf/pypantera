@@ -46,8 +46,8 @@ def createParser() -> object:
 
     #mechanism params
     parser.add_argument('--task', type=str, help='The task to perform', default='retrieval')
-    parser.add_argument('--embPath', '-eP', type=str, help='The path to the embeddings file', default='/ssd2/data/defaverifr/DATA/embeddings/glove/glove.6B.300d.txt')
-    parser.add_argument('--inputPath', '-i', type=str, help='The path to the input file', default='/ssd2/data/defaverifr/DATA/queries/msmarco/trec-dl-19.csv')
+    parser.add_argument('--embPath', '-eP', type=str, help='The path to the embeddings file')
+    parser.add_argument('--inputPath', '-i', type=str, help='The path to the input file')
     parser.add_argument('--mechanism', '-m', type=str, help='The mechanism to use', default='CMP')
     parser.add_argument('--t', '-t', type=float, help='The treshold value to use Vickrey mechanisms', default=0.75)
     parser.add_argument('--beta', '-beta', type=float, help='The beta value to use for the TEM mechanism', default=0.001)
