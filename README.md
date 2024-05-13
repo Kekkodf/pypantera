@@ -67,11 +67,15 @@ The mechansims implemented in pyPANTERA are divided in two categories:
 We provide a simple example to show how pyPANTERA works with a concrete example. We suggest to use the prepared virtual environment to run the example and the base script `test.py` to run the obfuscation pipeline.
 
 ```bash
-python test.py --embPath /absolute/path/to/embeddings --inputPath /absolute/path/to/input/data --outputPath /absolute/path/to/output/data
+python test.py --embPath /absolute/path/to/embeddings --inputPath /absolute/path/to/input/data --outputPath /absolute/path/to/output/data --mechanism MECHANISM --epsilon EPSILON --task TASK --numberOfObfuscations N --PARAMETERS
     
 ```
 
-The script will run the obfuscation pipeline using the embeddings in the path provided in the `--embPath | -eP` argument, the input data in the path provided in the `--inputPath | -i` argument, and `--outputPath | -o` is used as output path for storing the results. If `--outputPath` is not provided, it creates a folder `./results/task/mechanism/` to save the obfuscated data frames.
+The script will run the obfuscation pipeline using the embeddings in the path provided in the `--embPath | -eP` argument, the input data in the path provided in the `--inputPath | -i` argument, and `--outputPath | -o` is used as output path for storing the results. If `--outputPath` is not provided, it creates a folder `./results/task/mechanism/` to save the obfuscated data frames. 
+
+pyPANTERA requires that the input data is a CSV file with a column named `text` that contains the text to obfuscate and an `id` to keep trace of the correspondance between original and obfuscated versions. 
+
+The `--task | -tk` argument is used to specify the future task that you want to perform using the new obfuscated texts. The `--epsilon | -e` argument is used to specify the epsilon value for the differential privacy mechanism. The `--mechanism | -m` argument is used to specify the mechanism to use for the obfuscation. The `--numberOfObfuscations | -n` argument is used to specify the number of obfuscations to perform for the same text. Finally, the `--PARAMETERS` are the parameters for the mechanism that you want to use. We provide a specific list of parameters for each mechanism in the following section.
 
 ### Prameters
 
@@ -90,8 +94,7 @@ The script `test.py` has the following parameters, based on the mechanism parame
 - **Mahalanobis**: The parameters for the Mahalanobis mechanism are the following:
     - `--lam`: The lambda value for the Mahalanobis norm (default float: 1)
 - **VickreyCMP/VickreyMhl**: The parameters for the Vickrey mechanism are the following:
-    - `--t`: The treshold value for the Vickrey mechanism (default float: 0.75)
-    Eventually, if you use the `VickreyMhl` mechanism, you can also use the `--lam` parameter to set the lambda value for the Mahalanobis norm (default float: 1)
+    - `--t`: The treshold value for the Vickrey mechanism (default float: 0.75). Eventually, if you use the `VickreyMhl` mechanism, you can also use the `--lam` parameter to set the lambda value for the Mahalanobis norm (default float: 1)
 - **CusText**: The parameters for the CusText mechanism are the following:
     - `--k`: The number of neighbouring words to consider for the sampling (default int: 10)ù
     - `--distance | -d`: The distance metric to use for the sampling (default str: 'euclidean')
@@ -99,12 +102,11 @@ The script `test.py` has the following parameters, based on the mechanism parame
 - **TEM**: The parameters for the TEM mechanism are the following:
     - `--beta`: The beta value for the exponential mechanism (default float: 0.001)
 
-Suppose you want to run the obfuscation pipeline using the `CMP` mechanism with the embeddings in the path `./embeddings/glove.6B.50d.txt`, the input data in the path `./data/input.csv`, and the output data in the path `./data/output.csv`. You can run the following command:
+Suppose you want to run the obfuscation pipeline using the `CMP` mechanism with the embeddings in the path `./embeddings/glove.6B.50d.txt`, the input data in the path `./data/input.csv`, and the output data in the path `./data/output.csv`, for all the default values of $\varepsilon$ obtaining only one obfuscation for the original text. You can run the following command:
 
 ```bash
 python test.py --embPath /embeddings/glove.6B.50d.txt --inputPath /data/input.csv --outputPath /data/output/ --mechanism CMP
 ```
-
 
 ## License
 
