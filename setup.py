@@ -17,8 +17,6 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 with open(here / "requirements.txt") as f:
     requirements = f.read().splitlines()
 
-find_packages.remove('tests')
-
 # Arguments marked as "Required" below must be included for upload to PyPI.
 # Fields marked as "Optional" may be commented out.
 
@@ -87,7 +85,7 @@ setup(
         #   5 - Production/Stable
         "Development Status :: 3 - Alpha",
         # Pick your license as you wish
-        "License :: OSI Approved :: GPL-3.0 License",
+        #"License :: OSI Approved :: GPL-3.0 License",
         "Operating System :: OS Independent",
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate you support Python 3. These classifiers are *not*
@@ -97,6 +95,8 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3 :: Only",
     ],
     # This field adds keywords for your project which will appear on the
@@ -108,7 +108,7 @@ setup(
     keywords=["Differential Privacy", "NLP", "Obfuscation", "Anonymization"],  # Optional
     # When your source code is in a subdirectory under the project root, e.g.
     # `src/`, it is necessary to specify the `package_dir` argument.
-    #package_dir={"": "src"},  # Optional
+    package_dir={"": "pypantera"},  # Optional
     # You can just specify package directories manually here if your project is
     # simple. Or you can use find_packages().
     #
@@ -130,7 +130,7 @@ setup(
     #
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/discussions/install-requires-vs-requirements/
-    #install_requires=requirements,  # Optional
+    install_requires=requirements,  # Optional
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
     # syntax, for example:
