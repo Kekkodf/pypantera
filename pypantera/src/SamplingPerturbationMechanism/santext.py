@@ -16,11 +16,26 @@ class SanText(AbstractSamplingPerturbationMechanism):
     
     BibTeX of SanText Mechanism, extends CMP mechanism class of the pypanter package:
 
-    @inproceedings{ACL21/YueDu21,
-    author    = {Xiang Yue and Minxin Du and Tianhao Wang and Yaliang Li and Huan Sun and Sherman S. M. Chow},
-    title     = {Differential Privacy for Text Analytics via Natural Text Sanitization},
-    booktitle = {Findings, {ACL-IJCNLP} 2021},
-    year      = {2021},
+    @inproceedings{YueEtAl2021SanText,
+    title = "Differential Privacy for Text Analytics via Natural Text Sanitization",
+    author = "Yue, Xiang  and
+      Du, Minxin  and
+      Wang, Tianhao  and
+      Li, Yaliang  and
+      Sun, Huan  and
+      Chow, Sherman S. M.",
+    editor = "Zong, Chengqing  and
+      Xia, Fei  and
+      Li, Wenjie  and
+      Navigli, Roberto",
+    booktitle = "Findings of the Association for Computational Linguistics: ACL-IJCNLP 2021",
+    month = aug,
+    year = "2021",
+    address = "Online",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2021.findings-acl.337",
+    doi = "10.18653/v1/2021.findings-acl.337",
+    pages = "3853--3866",
     }
     '''
     def __init__(self, kwargs: dict[str:object]) -> None:
