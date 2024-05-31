@@ -123,6 +123,30 @@ python test.py --embPath /embeddings/glove.6B.50d.txt --inputPath /data/input.cs
 
 To enhance the clarity of how pyPANTERA works, we add a toy Python Notebook to simulate some of the obfuscation implemented. 
 
+## Experimental configuration of the mechanisms
+The following Table reports the experimental parameters used for obtaining the obfuscated texts used in the experiments presented in the paper.
+
+
+<table>
+<tr><th>Embedding Perturbation Mechanisms </th><th>Sampling Perturbation Mechanisms</th></tr>
+<tr><td>
+
+| **Mechanism**  | **Parameters**        |
+|----------------|-----------------------|
+| CMP            | -                     |
+| Mahalanobis    | $\lambda=1$           |
+| VickreyCMP     | $t=0.75$              |
+| VickreyMhl     | $t=0.75$, $\lambda=1$ |
+</td><td>
+
+| **Mechanism**  | **Parameters**        |
+|----------------|-----------------------|
+| CusText        | $K=10$                |
+| SanText        | -                     |
+| TEM            | $\beta=0.001$         |
+
+</td></tr> </table>
+
 ## Final results overview
 
 Using the `test.py` script running CMP, embeddings 300d GloVe with the default parameters, we obtain the following results for the DL'19 queries dataset (overview of the first two rows, for $\varepsilon = 1, 5, 10$):
