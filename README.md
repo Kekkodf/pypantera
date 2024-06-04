@@ -21,7 +21,7 @@ The package offers a combination of natural language processing and mathematical
 
 </center>
 
-## Virtual Environment
+## Virtual Environment - First way to run pyPANTERA
 
 We provide also a virtual environment to run the package:
 1. You can create the virtual environment ***virtualEnvPyPANTERA*** using the ```environment.yml``` file, and running in your terminal:
@@ -36,15 +36,15 @@ conda env create -f environment.yml
 conda env list
 ```
 
-3. Finnally, you can activate the virtual environment by running:
+3. Finally, you can activate the virtual environment by running:
 
 ```bash
 conda activate virtualEnvPyPANTERA
 ```
 
-In the ```requirements.txt``` file you can find the list of the packages exported from the virtual environment.
+In the ```requirements.txt``` file, you can find the list of the requirements used by pyPANTERA.
 
-## How to use pyPANTERA?
+## PyPI - Alternative way to run pyPANTERA
 
 pyPANTERA is designed to be easy to use and accessible for everyone. You can install it using pip:
 
