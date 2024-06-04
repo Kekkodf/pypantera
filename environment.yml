@@ -1,4 +1,4 @@
-name: 24_CIKM_DFF
+name: pyPANTERAVirtualEnv
 channels:
   - conda-forge
   - defaults
@@ -162,4 +162,3 @@ dependencies:
     - xxhash==3.4.1
     - yarl==1.9.4
     - zlib-state==0.1.6
-prefix: /home/defaverifr/.conda/envs/24_CIKM_DFF
