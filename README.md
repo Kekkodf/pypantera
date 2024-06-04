@@ -1,14 +1,25 @@
 # pyPANTERA
 ## A Python **P**ackage for n**A**tural la**N**guage obfusca**T**ion **E**nforcing p**R**ivacy & **A**nonymization
-<p align="center">
-    <img src="./images/pyPANTER.webp" width="255">
-</p>
+
+<center>
+
+![pyPANTERA Logo](https://raw.githubusercontent.com/Kekkodf/pypantera/main/images/pyPANTER.webp)
+
+</center>
 
 ## What is pyPANTERA?
 
-pyPANTERA[^1] is a Python package that provides a simple interface to obfuscate natural language text. It is designed to help developers and data scientists to implement, reproduce and test State-of-the-Art techniques for natural language obfuscation that implements $\varepsilon$ -Differential Privacy. The package is built using numpy, pandas, and scikit-learn libraries, and it is designed to be easy to use and integrate with other Python packages. 
+pyPANTERA[^1] is a Python package that provides a simple interface to obfuscate natural language text. It is designed to help privacy practitioners implement, reproduce and test State-of-the-Art techniques for natural language obfuscation that implements $\varepsilon$ -Differential Privacy. The repository offers a unified and flexible framework to test NLP and IR tesks like Sentiment Analysis and Document Retrieval. The package is built using numpy, pandas, and scikit-learn libraries, and it is designed to be easy to use and integrate with other Python packages. 
 
 The package offers a combination of natural language processing and mathematical transformations to obfuscate natural language text. It replaces the original string texts with their obfuscated versions, ensuring that the obfuscated text is not directly related to the original text. The obfuscation is performed using word embeddings and word sampling mechanisms, and it is designed to be $\varepsilon$-Differential Privacy compliant.
+
+## Pipeline in pyPANTERA
+
+<center>
+
+![pyPANTERA Pipeline](https://raw.githubusercontent.com/Kekkodf/pypantera/main/images/Pipeline_pyPANTERA.png)
+
+</center>
 
 ## Virtual Environment
 
@@ -49,46 +60,46 @@ import pypantera
 
 ## What can pyPANTERA do?
 
-pyPANTERA implements current State-of-the-Art mechanisms that uses $\varepsilon$-Differential Privacy to obfuscate natural language text. 
+pyPANTERA implements current State-of-the-Art mechanisms that use $\varepsilon$-Differential Privacy to obfuscate natural language text. 
 
-The mechansims implemented in pyPANTERA are divided in two categories:
+The mechanisms implemented in pyPANTERA are divided into two categories:
 
-- **Word Embeddings Perturbation**: This mechanism uses word embeddings to obfuscate the text. It replaces the original words ebeddings with a perturbated version of them. Such perturbation is done by adding a statistical noise depending on the mechansim design. The mechansim implemented are the following:
-    - Calibrated Multivariate Perturbations (**CMP**): Addition of sferical noise to the word embeddings. See reference [^2] for more information.
-    - Mahalanobis Perturbations (**Mahalanobis**): Addition of eliptical noise to the word embeddings. See reference [^3] for more information.
-    - Vickrey family of mechanisms (**Vickrey**): Perturbation performed using a treshold value to select the nearest perturbed embedding of a term. See reference [^4] for more information.
+- **Word Embeddings Perturbation**: This mechanism uses word embeddings to obfuscate the text. It replaces the original word embeddings with a perturbated version of them. Such perturbation is done by adding a statistical noise depending on the mechanism design. The mechanisms implemented are the following:
+    - Calibrated Multivariate Perturbations (**CMP**): Addition of spherical noise to the word embeddings. See reference [^2] for more information.
+    - Mahalanobis Perturbations (**Mahalanobis**): Addition of elliptical noise to the word embeddings. See reference [^3] for more information.
+    - Vickrey family of mechanisms (**Vickrey**): Perturbation is performed using a threshold value to select the nearest perturbed embedding of a term. See reference [^4] for more information.
 
-- **Word Sampling Perturbation**: This mechanism uses word sampling to obfuscate the text. The mechanism computes for each word in the text a list of neighbouring words with the respective scores, then it samples a substitution candidate from basing such sampling on the scores of the neighbouring terms and teh privacy budget $\varepsilon$. The mechansim implemented are the following:
+- **Word Sampling Perturbation**: This mechanism uses word sampling to obfuscate the text. The mechanism computes for each word in the text a list of neighbouring words with the respective scores, then it samples a substitution candidate by basing such sampling on the scores of the neighbouring terms and the privacy budget $\varepsilon$. The mechanisms implemented are the following:
     - Customized Text (**CusText**): Sampling of the substitution candidate from the neighbouring $k$ words of the original word. See reference [^5] for more information.
     - Sanitization Text (**SanText**): Sampling of the substitution candidate from the neighbouring words of the original word. See reference [^6] for more information.
     - Truncated Exponential Mechanism (**TEM**): Sampling of the substitution candidate using the exponential mechanism with the scores of the neighbouring words. See reference [^7] for more information.
 
 ## How does pyPANTERA work?
 
-We provide a simple example to show how pyPANTERA works with a concrete example. We suggest to use the prepared virtual environment to run the example and the base script `test.py` to run the obfuscation pipeline.
+We provide a simple example to show how pyPANTERA works with a concrete example. We suggest using the prepared virtual environment to run the example and the base script `testTASK.py` to run the obfuscation pipeline, i.e, ObfuscationIR and ObfuscationSentiment.
 
 ```bash
-python test.py --embPath /absolute/path/to/embeddings --inputPath /absolute/path/to/input/data --outputPath /absolute/path/to/output/data --mechanism MECHANISM --epsilon EPSILON --task TASK --numberOfObfuscations N --PARAMETERS
+python testObfuscationIR.py --embPath /absolute/path/to/embeddings --inputPath /absolute/path/to/input/data --outputPath /absolute/path/to/output/data --mechanism MECHANISM --epsilon EPSILON --task TASK --numberOfObfuscations N --PARAMETERS
     
 ```
 
 The script will run the obfuscation pipeline using the embeddings in the path provided in the `--embPath | -eP` argument, the input data in the path provided in the `--inputPath | -i` argument, and `--outputPath | -o` is used as output path for storing the results. If `--outputPath` is not provided, it creates a folder `./results/task/mechanism/` to save the obfuscated data frames. 
 
-pyPANTERA requires that the input data is a CSV file with a column named `text` that contains the text to obfuscate and an `id` to keep trace of the correspondance between original and obfuscated versions. 
+pyPANTERA requires that the input data is a CSV file with a column named `text` that contains the text to obfuscate and an `id` to keep track of the correspondence between original and obfuscated versions. 
 
 The `--task | -tk` argument is used to specify the future task that you want to perform using the new obfuscated texts. The `--epsilon | -e` argument is used to specify the epsilon value for the differential privacy mechanism. The `--mechanism | -m` argument is used to specify the mechanism to use for the obfuscation. The `--numberOfObfuscations | -n` argument is used to specify the number of obfuscations to perform for the same text. Finally, the `--PARAMETERS` are the parameters for the mechanism that you want to use. We provide a specific list of parameters for each mechanism in the following section.
 
 ## UML of pyPANTERA
 
-The UML diagram of the pyPANTERA source code is displayied below:
+The UML diagram of the pyPANTERA source code is displayed below:
 
 <center>
 
-![pyPANTER UML diagram](./images/classes.png)
+![pyPANTERA UML diagram](https://raw.githubusercontent.com/Kekkodf/pypantera/main/images/classes.png)
 
 </center>
 
-## Prameters
+## Parameters
 
 The script `test.py` has the following parameters, based on the mechanism parameters that you want to use:
 
@@ -105,10 +116,10 @@ The script `test.py` has the following parameters, based on the mechanism parame
 - **Mahalanobis**: The parameters for the Mahalanobis mechanism are the following:
     - `--lam`: The lambda value for the Mahalanobis norm (default float: 1)
 - **VickreyCMP/VickreyMhl**: The parameters for the Vickrey mechanism are the following:
-    - `--t`: The treshold value for the Vickrey mechanism (default float: 0.75). Eventually, if you use the `VickreyMhl` mechanism, you can also use the `--lam` parameter to set the lambda value for the Mahalanobis norm (default float: 1)
+    - `--t`: The threshold value for the Vickrey mechanism (default float: 0.75). Eventually, if you use the `VickreyMhl` mechanism, you can also use the `--lam` parameter to set the lambda value for the Mahalanobis norm (default float: 1)
 - **CusText**: The parameters for the CusText mechanism are the following:
     - `--k`: The number of neighbouring words to consider for the sampling (default int: 10)
-    - `--distance | -d`: The distance metric to use for the sampling (default str: 'euclidean')
+    - `--distance | -d`: The distance metric to use for the sampling (default str: 'Euclidean')
 - **SanText**: The parameters for the SanText mechanism are only the general ones.
 - **TEM**: The parameters for the TEM mechanism are the following:
     - `--beta`: The beta value for the exponential mechanism (default float: 0.001)
