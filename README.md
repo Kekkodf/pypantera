@@ -7,6 +7,37 @@
 
 </center>
 
+## Read the Full paper
+pyPANTERA has been published in the Proceedings of the 33rd ACM International Conference on Information and Knowledge Management (CIKM 2024) Conference held in Boise, Idaho, USA (20-25 October 2024). The project was developed by Francesco Luigi De Faveri, Guglielmo Faggioli, and Nicola Ferro by the Intelligent Interactive Information Access Hub (IIIA Hub) at the Department of Information Engineering of the University of Padua. For more information, check the [official IIIA Hub website](https://iiia.dei.unipd.it/).
+
+:star: :trophy: The paper has won the <strong> Best Resource Paper Award</strong> at the main conference. You can read the full paper [here](https://dl.acm.org/doi/10.1145/3627673.3679173). :trophy: :star:
+
+## Cite us
+Please if you use pyPANTERA in your research, cite the following paper:
+
+```bibtex
+@inproceedings{DeFaveriFaggioliFerro2024,
+  author       = {Francesco Luigi De Faveri and
+                  Guglielmo Faggioli and
+                  Nicola Ferro},
+  editor       = {Edoardo Serra and
+                  Francesca Spezzano},
+  title        = {pyPANTERA: {A} Python PAckage for Natural language obfuscaTion Enforcing
+                  pRivacy {\&} Anonymization},
+  booktitle    = {Proceedings of the 33rd {ACM} International Conference on Information
+                  and Knowledge Management, {CIKM} 2024, Boise, ID, USA, October 21-25,
+                  2024},
+  pages        = {5348--5353},
+  publisher    = {{ACM}},
+  year         = {2024},
+  url          = {https://doi.org/10.1145/3627673.3679173},
+  doi          = {10.1145/3627673.3679173},
+  timestamp    = {Thu, 14 Nov 2024 13:43:22 +0100},
+  biburl       = {https://dblp.org/rec/conf/cikm/FaveriF024.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+```
+
 ## What is pyPANTERA?
 
 pyPANTERA[^1] is a Python package that provides a simple interface to obfuscate natural language text. It is designed to help privacy practitioners implement, reproduce and test State-of-the-Art techniques for natural language obfuscation that implements $\varepsilon$ -Differential Privacy. The repository offers a unified and flexible framework to test NLP and IR tesks like Sentiment Analysis and Document Retrieval. The package is built using numpy, pandas, and scikit-learn libraries, and it is designed to be easy to use and integrate with other Python packages. 
